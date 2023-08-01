@@ -1,0 +1,3 @@
+package io.opentelemetry.kotlindelegate.api.metrics
+
+actual class LongCounterBuilderWrapper : ICounterBuilderWrapper<LongCounterWrapper, ObservableLongCounterWrapper, ObservableLongMeasurementWrapper>

@@ -1,0 +1,4 @@
+package io.opentelemetry.kotlindelegate.api.metrics
+
+
+expect class DoubleGaugeBuilderWrapper : IGaugeBuilderWrapper<ObservableDoubleGaugeWrapper, ObservableDoubleMeasurementWrapper>

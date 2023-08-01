@@ -1,0 +1,3 @@
+package io.opentelemetry.kotlindelegate.api.metrics
+
+actual class DoubleUpDownCounterBuilderWrapper : ICounterBuilderWrapper<DoubleUpDownCounterWrapper, ObservableDoubleUpDownCounterWrapper, ObservableDoubleMeasurementWrapper>

@@ -1,0 +1,3 @@
+package io.opentelemetry.kotlindelegate.api.metrics
+
+expect class LongUpDownCounterBuilderWrapper : ICounterBuilderWrapper<LongUpDownCounterWrapper, ObservableLongUpDownCounterWrapper, ObservableLongMeasurementWrapper>
