@@ -18,22 +18,20 @@ actual class TracerWrapper(
     @OptIn(ExperimentalContracts::class)
     actual inline fun <T> runInSpan(
         spanName: String,
-        onException: (SpanWrapper, Throwable) -> Unit,
+        onError: (SpanWrapper, Throwable) -> T,
         block: () -> T,
     ): T {
         contract {
             callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+            callsInPlace(onError, InvocationKind.AT_MOST_ONCE)
         }
-        val span = wrappedObject.spanBuilder(spanName).startSpan()
-        val result: T
-        try {
-            result = block()
+        val started = wrappedObject.spanBuilder(spanName).startSpan()
+        return try {
+            block()
         } catch (ex: Throwable) {
-            onException(SpanWrapper(span), ex)
-            throw ex
+            onError(started.let(::SpanWrapper), ex)
         } finally {
-            span.end()
+            started.end()
         }
-        return result
     }
 }

@@ -13,6 +13,7 @@ actual class AttributesWrapper(
         wrappedObject.asMap().mapKeys { AttributeKeyWrapper(it.key) }
     }
 
+    @JvmName("getTyped")
     actual operator fun <T : Any> get(key: AttributeKeyWrapper<T>): T? {
         return wrappedObject.get(key.wrappedObject)
     }

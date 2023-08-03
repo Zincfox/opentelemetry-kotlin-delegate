@@ -8,7 +8,7 @@ pluginManagement {
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.5.0"
 }
-include(":all")
-include(":events")
-include(":logs")
-rootProject.name = "opentelemetry-kotlin-delegate-api"
+include(":api")
+include(":api-events")
+include(":api-logs")
+rootProject.name = "opentelemetry-kotlin-delegate"

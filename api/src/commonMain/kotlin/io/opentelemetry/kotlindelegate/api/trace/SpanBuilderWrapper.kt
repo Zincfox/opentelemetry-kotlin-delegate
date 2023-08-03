@@ -4,6 +4,7 @@ import io.opentelemetry.kotlindelegate.utils.IWrapper
 import io.opentelemetry.kotlindelegate.api.common.AttributeKeyWrapper
 import io.opentelemetry.kotlindelegate.api.common.AttributesWrapper
 import io.opentelemetry.kotlindelegate.context.ContextWrapper
+import io.opentelemetry.kotlindelegate.utils.runInSpanDefaultOnError
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
@@ -28,25 +29,19 @@ expect class SpanBuilderWrapper : IWrapper {
 
 @OptIn(ExperimentalContracts::class)
 inline fun <T> SpanBuilderWrapper.runInside(
-    onException: (SpanWrapper, Throwable) -> Unit =
-        { span, ex ->
-            span.recordException(ex)
-            span.setStatus(StatusCodeWrapper.ERROR)
-        },
+    onError: (SpanWrapper, Throwable) -> T = ::runInSpanDefaultOnError,
     block: () -> T,
 ): T {
     contract {
         callsInPlace(block, InvocationKind.EXACTLY_ONCE)
+        callsInPlace(onError, InvocationKind.AT_MOST_ONCE)
     }
     val wrapper = startSpan()
-    val result: T
-    try {
-        result = block()
+    return try {
+        block()
     } catch (ex: Throwable) {
-        onException(wrapper, ex)
-        throw ex
+        onError(wrapper, ex)
     } finally {
         wrapper.end()
     }
-    return result
 }

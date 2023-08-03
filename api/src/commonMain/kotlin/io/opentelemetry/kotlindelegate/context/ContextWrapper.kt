@@ -45,7 +45,3 @@ inline fun <T, U, V> ContextWrapper.wrap(crossinline block: (T, U) -> V): (T, U)
         scope.close()
     }
 }
-
-inline fun <T> ContextWrapper.wrap(crossinline block: (T) -> Unit): (T) -> Unit = wrap<T, Unit>(block)
-inline fun <T, U> ContextWrapper.wrap(crossinline block: (T, U) -> Unit): (T, U) -> Unit = wrap<T, U, Unit>(block)
-inline fun ContextWrapper.wrap(crossinline block: () -> Unit): () -> Unit = wrap<Unit>(block)

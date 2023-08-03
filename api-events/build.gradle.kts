@@ -44,15 +44,19 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(project(":all"))
+                api(project(":api"))
             }
         }
         val commonTest by getting
-        val jvmMain by getting
+        val jvmMain by getting {
+            dependencies {
+                api("io.opentelemetry:opentelemetry-api-events:1.28.0-alpha")
+            }
+        }
         val jvmTest by getting
         /*val jsMain by getting {
             dependencies {
-                api(npm("@opentelemetry/api-logs","^0.41.1"))
+                api(npm("@opentelemetry/api-events","^0.41.1"))
             }
         }
         val jsTest by getting*/
