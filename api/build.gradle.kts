@@ -1,11 +1,10 @@
 plugins {
     kotlin("multiplatform") apply true
+    `maven-publish`
 }
 
-version = "0.1.0"
-
-val enableJvm: Boolean = true
-val enableJs: Boolean = false
+val enableJvm: Boolean by parent!!.extra
+val enableJs: Boolean by parent!!.extra
 
 repositories {
     mavenCentral()
@@ -20,7 +19,7 @@ if (enableJs) {
 kotlin {
     if (enableJvm) {
         jvm {
-            jvmToolchain(8)
+            jvmToolchain(17)
             withJava()
             testRuns.named("test") {
                 executionTask.configure {
@@ -75,6 +74,24 @@ kotlin {
                 }
             }
             val jsTest by getting
+        }
+    }
+}
+
+publishing {
+    publications {
+    }
+    repositories {
+        maven {
+            setUrl("https://se-gitlab.inf.tu-dresden.de/api/v4/projects/2537/packages/maven")
+            name = "GitLab"
+            credentials(HttpHeaderCredentials::class) {
+                name = "Job-Token"
+                value = System.getenv("CI_JOB_TOKEN")
+            }
+            authentication {
+                create("HttpHeaderAuthentication", HttpHeaderAuthentication::class.java)
+            }
         }
     }
 }

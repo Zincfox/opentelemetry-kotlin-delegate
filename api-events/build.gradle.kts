@@ -1,46 +1,54 @@
 plugins {
     kotlin("multiplatform") apply true
+    `maven-publish`
 }
 
-version = "0.1.0"
+val enableJvm: Boolean by parent!!.extra
+val enableJs: Boolean by parent!!.extra
 
 repositories {
     mavenCentral()
 }
 
-rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
-    rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().download = false
+if (enableJs) {
+    rootProject.plugins.withType<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootPlugin> {
+        rootProject.the<org.jetbrains.kotlin.gradle.targets.js.nodejs.NodeJsRootExtension>().download = false
+    }
 }
 
 kotlin {
-    jvm {
-        jvmToolchain(8)
-        withJava()
-        testRuns.named("test") {
-            executionTask.configure {
-                useJUnitPlatform()
+    if (enableJvm) {
+        jvm {
+            jvmToolchain(17)
+            withJava()
+            testRuns.named("test") {
+                executionTask.configure {
+                    useJUnitPlatform()
+                }
             }
         }
     }
-    /*js(IR) {
-        browser {
-            commonWebpackConfig {
-                cssSupport {
-                    enabled.set(false)
+    if (enableJs) {
+        js(IR) {
+            browser {
+                commonWebpackConfig {
+                    cssSupport {
+                        enabled.set(false)
+                    }
+                }
+                testTask {
+                    useKarma {
+                        useFirefoxHeadless()
+                    }
                 }
             }
-            testTask {
-                useKarma {
-                    useFirefoxHeadless()
+            nodejs {
+                testTask {
+                    useMocha()
                 }
             }
         }
-        nodejs {
-            testTask {
-                useMocha()
-            }
-        }
-    }*/
+    }
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -48,17 +56,39 @@ kotlin {
             }
         }
         val commonTest by getting
-        val jvmMain by getting {
-            dependencies {
-                api("io.opentelemetry:opentelemetry-api-events:1.28.0-alpha")
+        if (enableJvm) {
+            val jvmMain by getting {
+                dependencies {
+                    api("io.opentelemetry:opentelemetry-api-events:1.28.0-alpha")
+                }
+            }
+            val jvmTest by getting
+        }
+        if (enableJs) {
+            val jsMain by getting {
+                dependencies {
+                    api(npm("@opentelemetry/api-events", "^0.41.1"))
+                }
+            }
+            val jsTest by getting
+        }
+    }
+}
+
+publishing {
+    publications {
+    }
+    repositories {
+        maven {
+            setUrl("https://se-gitlab.inf.tu-dresden.de/api/v4/projects/2537/packages/maven")
+            name = "GitLab"
+            credentials(HttpHeaderCredentials::class) {
+                name = "Job-Token"
+                value = System.getenv("CI_JOB_TOKEN")
+            }
+            authentication {
+                create("HttpHeaderAuthentication", HttpHeaderAuthentication::class.java)
             }
         }
-        val jvmTest by getting
-        /*val jsMain by getting {
-            dependencies {
-                api(npm("@opentelemetry/api-events","^0.41.1"))
-            }
-        }
-        val jsTest by getting*/
     }
 }

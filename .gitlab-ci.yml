@@ -1,0 +1,56 @@
+stages:
+  - test
+  - release
+  - deploy
+
+test:
+  image: gradle:7-jdk17-focal
+  stage: test
+  before_script:
+    - >
+      apt update && apt install -y curl firefox \
+        && curl -sSf https://deb.nodesource.com/setup_20.x | bash \
+        && apt install -y nodejs
+  script:
+    - gradle check
+  only:
+    - main
+  tags:
+    - docker
+
+release:
+  stage: release
+  before_script:
+    - project_url=$(echo $CI_PROJECT_URL | sed 's/https:\/\///')
+    - git remote set-url origin https://oauth2:$GITLAB_TAGPUSHER_TOKEN@$project_url
+  script:
+    - VERSION="$(cat build.gradle.kts | grep "^version *= *" | awk -F"\"|\"" '{print $2}')"
+    - TAG="v${VERSION}"
+    - git tag -l "$TAG"
+    - >
+      if [ $(git tag -l "$TAG") ]; then
+        echo "Version tag $TAG already exists"
+      else
+        echo "Pushing new version tag $TAG"
+        git tag --force $TAG
+        git push --force origin $TAG
+      fi
+  only:
+    - main
+  tags:
+    - shell
+
+deploy:
+  image: gradle:7-jdk17
+  stage: deploy
+  before_script:
+    - >
+      apt update && apt install -y curl \
+        && curl -sSf https://deb.nodesource.com/setup_20.x | bash \
+        && apt install -y nodejs
+  script:
+    - gradle publish
+  only:
+    - tags
+  tags:
+    - docker
