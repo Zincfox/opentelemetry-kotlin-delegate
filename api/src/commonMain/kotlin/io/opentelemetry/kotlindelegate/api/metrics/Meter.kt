@@ -1,5 +1,7 @@
 package io.opentelemetry.kotlindelegate.api.metrics
 
+import io.opentelemetry.kotlindelegate.utils.java.Runnable
+
 
 expect interface Meter {
     fun counterBuilder(name: String): LongCounterBuilder

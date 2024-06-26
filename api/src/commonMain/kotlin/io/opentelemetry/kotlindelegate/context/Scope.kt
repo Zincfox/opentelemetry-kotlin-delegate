@@ -1,6 +1,6 @@
 package io.opentelemetry.kotlindelegate.context
 
-expect interface Scope : io.opentelemetry.kotlindelegate.utils.java.AutoCloseable {
+expect interface Scope : AutoCloseable {
     override fun close()
 }
 

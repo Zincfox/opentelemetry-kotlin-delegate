@@ -2,7 +2,7 @@ package io.opentelemetry.kotlindelegate.api.baggage
 
 import io.opentelemetry.kotlindelegate.context.Context
 import io.opentelemetry.kotlindelegate.context.ImplicitContextKeyed
-import java.util.function.BiConsumer
+import io.opentelemetry.kotlindelegate.utils.java.BiConsumer
 
 expect interface Baggage : ImplicitContextKeyed {
     open override fun storeInContext(context: Context): Context

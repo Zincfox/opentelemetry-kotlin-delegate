@@ -1,6 +1,6 @@
 package io.opentelemetry.kotlindelegate.api.trace
 
-import io.opentelemetry.api.common.AttributeKey
+import io.opentelemetry.kotlindelegate.api.common.AttributeKey
 import io.opentelemetry.kotlindelegate.api.common.Attributes
 import io.opentelemetry.kotlindelegate.context.Context
 

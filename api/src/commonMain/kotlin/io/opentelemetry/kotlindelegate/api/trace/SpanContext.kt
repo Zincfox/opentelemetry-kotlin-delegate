@@ -1,7 +1,5 @@
 package io.opentelemetry.kotlindelegate.api.trace
 
-import io.opentelemetry.api.trace.TraceState
-
 expect interface SpanContext {
 
     fun getTraceId(): String
@@ -30,5 +28,5 @@ expect object SpanContextStatic {
         spanIdHex: String,
         traceFlags: TraceFlags,
         traceState: TraceState,
-    ): io.opentelemetry.api.trace.SpanContext
+    ): SpanContext
 }

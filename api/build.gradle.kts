@@ -1,4 +1,7 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
+import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 
 plugins {
     kotlin("multiplatform") apply true
@@ -21,6 +24,12 @@ if (enableJs) {
 kotlin {
     if (enableJvm) {
         jvm {
+            compilations.all {
+                kotlinOptions {
+                    freeCompilerArgs = listOf("-Xexpect-actual-classes", "-opt-in=kotlin.ExperimentalStdlibApi")
+                    jvmTarget = "17"
+                }
+            }
             jvmToolchain(17)
             withJava()
             testRuns.named("test") {
@@ -32,6 +41,11 @@ kotlin {
     }
     if (enableJs) {
         js(IR) {
+            compilations.all {
+                kotlinOptions {
+                    freeCompilerArgs += listOf("-Xexpect-actual-classes", "-opt-in=kotlin.ExperimentalStdlibApi")
+                }
+            }
             browser {
                 commonWebpackConfig {
                     cssSupport {
@@ -80,10 +94,9 @@ kotlin {
     }
 }
 
-tasks.withType<KotlinCompile> {
+tasks.withType<KotlinCompileCommon> {
     kotlinOptions {
-        freeCompilerArgs = listOf("-Xexpect-actual-classes")
-        jvmTarget = "17"
+        freeCompilerArgs = listOf("-Xexpect-actual-classes", "-opt-in=kotlin.ExperimentalStdlibApi")
     }
 }
 

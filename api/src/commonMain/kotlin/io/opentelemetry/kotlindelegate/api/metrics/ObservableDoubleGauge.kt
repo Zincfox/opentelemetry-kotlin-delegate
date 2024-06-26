@@ -1,5 +1,5 @@
 package io.opentelemetry.kotlindelegate.api.metrics
 
-expect interface ObservableDoubleGauge : io.opentelemetry.kotlindelegate.utils.java.AutoCloseable {
+expect interface ObservableDoubleGauge : AutoCloseable {
     open override fun close()
 }

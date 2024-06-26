@@ -1,7 +1,6 @@
 package io.opentelemetry.kotlindelegate.api.metrics
 
-import io.opentelemetry.api.common.Attributes
-import io.opentelemetry.api.metrics.ObservableMeasurement
+import io.opentelemetry.kotlindelegate.api.common.Attributes
 
 expect interface ObservableLongMeasurement : ObservableMeasurement {
     fun record(value: Long)

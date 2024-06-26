@@ -1,7 +1,6 @@
 package io.opentelemetry.kotlindelegate.api.metrics
 
-import io.opentelemetry.api.metrics.*
-import java.util.function.Consumer
+import io.opentelemetry.kotlindelegate.utils.java.Consumer
 
 expect interface DoubleUpDownCounterBuilder {
     fun setDescription(description: String): DoubleUpDownCounterBuilder
