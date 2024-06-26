@@ -1,5 +1,5 @@
 package io.opentelemetry.kotlindelegate.api.trace.propagation
 
-import io.opentelemetry.kotlindelegate.context.propagation.TextMapPropagatorWrapper
+import io.opentelemetry.context.propagation.TextMapPropagator
 
-expect val W3CTraceContextPropagatorWrapper: TextMapPropagatorWrapper
+expect val W3CTraceContextPropagator: TextMapPropagator

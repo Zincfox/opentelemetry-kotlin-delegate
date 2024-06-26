@@ -12,4 +12,3 @@ plugins {
 }
 include("api")
 include("api-events")
-include("api-logs")
