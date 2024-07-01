@@ -1,9 +1,6 @@
 package io.opentelemetry.kotlindelegate.api.common
 
-import io.opentelemetry.kotlindelegate.js.JsRecord
-import io.opentelemetry.kotlindelegate.js.emptyJsRecord
-import io.opentelemetry.kotlindelegate.js.set
-import io.opentelemetry.kotlindelegate.js.toJsRecord
+import io.opentelemetry.kotlindelegate.js.*
 import io.opentelemetry.kotlindelegate.utils.java.BiConsumer
 import io.opentelemetry.kotlindelegate.js.Attributes as JSAttributes
 
@@ -16,7 +13,8 @@ actual interface Attributes {
     actual fun toBuilder(): AttributesBuilder
 }
 
-internal class AttributesImpl(val map: Map<AttributeKey<*>, Any> = emptyMap()) : Attributes {
+internal class AttributesImpl
+private constructor(val map: Map<AttributeKey<*>, Any>, val jsAttributes: JSAttributes) : Attributes {
 
     companion object {
 
@@ -39,7 +37,7 @@ internal class AttributesImpl(val map: Map<AttributeKey<*>, Any> = emptyMap()) :
         }
     }
 
-    val jsAttributes: JSAttributes = toJSAttributes(map)
+    internal constructor(map: Map<AttributeKey<*>, Any> = emptyMap()) : this(map, toJSAttributes(map))
 
     override fun forEach(consumer: BiConsumer<in AttributeKey<*>, in Any>) =
         map.forEach { consumer.accept(it.key, it.value) }
@@ -50,6 +48,11 @@ internal class AttributesImpl(val map: Map<AttributeKey<*>, Any> = emptyMap()) :
 
     override fun size(): Int = map.size
     override fun toBuilder(): AttributesBuilder = AttributesBuilderImpl(map)
+}
+
+fun Attributes.asJsAttributes(): JSAttributes = when (this) {
+    is AttributesImpl -> jsAttributes
+    else -> AttributesImpl.toJSAttributes(asMap())
 }
 
 actual object AttributesStatic {
