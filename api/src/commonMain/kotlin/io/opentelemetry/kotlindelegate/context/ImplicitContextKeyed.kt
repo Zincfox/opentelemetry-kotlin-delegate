@@ -1,6 +1,7 @@
 package io.opentelemetry.kotlindelegate.context
 
 expect interface ImplicitContextKeyed {
-    open fun makeCurrent(): Scope
     fun storeInContext(context: Context): Context
 }
+
+expect inline fun <R> ImplicitContextKeyed.runWithActive(crossinline block: () -> R): R

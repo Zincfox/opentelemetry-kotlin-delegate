@@ -1,6 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.KotlinJsCompile
-import org.jetbrains.kotlin.gradle.tasks.Kotlin2JsCompile
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
 
 plugins {
@@ -68,9 +65,7 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
-            dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
-            }
+
         }
         val commonTest by getting
         if (enableJvm) {

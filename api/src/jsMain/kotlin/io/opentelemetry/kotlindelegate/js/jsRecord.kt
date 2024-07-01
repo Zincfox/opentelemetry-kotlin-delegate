@@ -16,11 +16,11 @@ private fun <K, T> jsRecordGet(record: JsRecord<K, T>, key: K): T {
 
 operator fun <K, T> JsRecord<K, T>.get(key: K): T = jsRecordGet(this, key)
 
-private fun <K> jsRecordKeys(record: JsRecord<K, *>): List<K> {
-    return (js("Object.keys(record)") as Array<K>).toList()
+private fun <K> jsRecordKeys(record: JsRecord<K, *>): Array<K> {
+    return (js("Object.keys(record)") as Array<K>)
 }
 
-fun <K> JsRecord<K, *>.keys(): List<K> = jsRecordKeys(this)
+fun <K> JsRecord<K, *>.keys(): Array<K> = jsRecordKeys(this)
 
 fun <K, T> JsRecord<K, T>.toMap(): Map<K, T> = keys().associateWith { this[it] }
 

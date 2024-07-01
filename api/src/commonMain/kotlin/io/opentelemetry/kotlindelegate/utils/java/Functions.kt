@@ -18,3 +18,15 @@ expect fun interface BiConsumer<T, U> {
 expect fun interface Predicate<T> {
     fun test(t: T): Boolean
 }
+
+expect fun interface Function<T, U> {
+    fun apply(t: T): U
+}
+
+expect fun interface BiFunction<T, U, V> {
+    fun apply(t: T, u: U): V
+}
+
+expect fun interface Supplier<T> {
+    fun get(): T
+}

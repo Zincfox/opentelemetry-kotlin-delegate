@@ -10,7 +10,7 @@ external class ContextAPI protected constructor() {
     fun <T> bind(context: Context, target: T): T
     fun disable()
     fun setGlobalContextManager(contextManager: ContextManager): Boolean
-    fun <A, F : (args: List<A>) -> R, R> with(
+    fun <A, F : (args: Array<A>) -> R, R> with(
         context: Context,
         fn: F,
         thisArg: Any? = definedExternally,
@@ -183,7 +183,7 @@ external interface ContextManager {
     fun <T> bind(context: Context, target: T): T
     fun disable(): ContextManager
     fun enable(): ContextManager
-    fun <A, F : (args: List<A>) -> R, R> with(
+    fun <A, F : (args: Array<A>) -> R, R> with(
         context: Context,
         fn: F,
         thisArg: Any? = definedExternally,
@@ -393,9 +393,9 @@ external interface TextMapGetter<in Carrier : Any> {
 
 external interface TextMapPropagator<Carrier : Any> {
 
-    fun extract(context: Context, carrier: Carrier, getter: TextMapGetter<Carrier>? = definedExternally): Context
+    fun extract(context: Context, carrier: Carrier, getter: TextMapGetter<Carrier>?): Context
     fun fields(): Array<String>
-    fun inject(context: Context, carrier: Carrier, setter: TextMapSetter<Carrier>? = definedExternally): Context
+    fun inject(context: Context, carrier: Carrier, setter: TextMapSetter<Carrier>?)
 }
 
 external interface TextMapSetter<in Carrier : Any> {
