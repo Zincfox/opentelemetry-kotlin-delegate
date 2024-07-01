@@ -113,7 +113,7 @@ external class ProxyTracerProvider : TracerProvider {
 
     fun setDelegate(delegate: TracerProvider)
 
-    override fun getTracer(name: String, version: String?, options: TracerOptions?): Tracer?
+    override fun getTracer(name: String, version: String?, options: TracerOptions?): Tracer
 }
 
 
@@ -439,7 +439,7 @@ external interface TracerProvider {
         name: String,
         version: String? = definedExternally,
         options: TracerOptions? = definedExternally,
-    ): Tracer?
+    ): Tracer
 }
 
 external interface UpDownCounter<AttributeTypes : Attributes> {
@@ -463,10 +463,10 @@ external val trace: TraceAPI
 external fun baggageEntryMetadataFromString(str: String): BaggageEntryMetadata
 external fun createContextKey(description: String): ContextKey
 external fun createNoopMeter(): Meter
-external fun createTraceState(): TraceState
-external fun isSpanContextValid(): Boolean
-external fun isValidSpanId(): Boolean
-external fun isValidTraceId(): Boolean
+external fun createTraceState(rawTraceState: String? = definedExternally): TraceState
+external fun isSpanContextValid(spanContext: SpanContext): Boolean
+external fun isValidSpanId(spanId: String): Boolean
+external fun isValidTraceId(traceId: String): Boolean
 
 sealed external class DiagLogLevel {
     object ALL : DiagLogLevel
