@@ -33,7 +33,7 @@ internal class MeterBuilderImpl(val name: String, val provider: JsMeterProvider)
         val meter: JsMeter = if (instrumentationVersion != null)
             provider.getMeter(name, instrumentationVersion, options)
         else
-            provider.getMeter(name, options = options)
+            provider.getMeter(name, undefined, options)
         return MeterWrapper(meter)
     }
 }

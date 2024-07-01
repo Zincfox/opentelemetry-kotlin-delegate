@@ -287,7 +287,7 @@ external interface MeterOptions {
 
 external interface MeterProvider {
 
-    fun getMeter(name: String, version: String? = definedExternally, options: MeterOptions? = definedExternally): Meter
+    fun getMeter(name: String, version: String?, options: MeterOptions?): Meter
 }
 
 external interface MetricAdvice {
