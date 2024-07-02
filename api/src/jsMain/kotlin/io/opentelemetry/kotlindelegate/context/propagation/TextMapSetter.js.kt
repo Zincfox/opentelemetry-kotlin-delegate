@@ -9,7 +9,7 @@ actual fun interface TextMapSetter<C> {
     actual fun set(carrier: C?, key: String, value: String)
 }
 
-private class TextMapSetterJsAdapter<in C : Any>(val setter: TextMapSetter<in C>) : JsTextMapSetter<C> {
+private class TextMapSetterJsAdapter<C : Any>(val setter: TextMapSetter<C>) : JsTextMapSetter<C> {
 
     override fun set(carrier: C, key: String, value: String) {
         setter.set(carrier, key, value)
@@ -23,15 +23,24 @@ private class TextMapSetterCommonAdapter<C : Any>(val setter: JsTextMapSetter<C>
     }
 }
 
+private class NullUnitSetterAdapter(val setter: TextMapSetter<*>): JsTextMapSetter<Unit> {
+
+    override fun set(carrier: Unit, key: String, value: String) {
+        setter.set(null, key, value)
+    }
+}
+
 internal fun <C : Any> TextMapSetter<C>.asJsSetter(): JsTextMapSetter<C> = when (this) {
     is TextMapSetterCommonAdapter<C> -> this.setter
     is TextMapRecordSetter -> JsTextMapRecordSetter
     else -> TextMapSetterJsAdapter(this)
 }
 
-internal fun <C : Any> JsTextMapSetter<C>.asCommonSetter(): TextMapSetter<in C> = when (this) {
+internal fun <C> TextMapSetter<C>.asNullUnitJsSetter(): JsTextMapSetter<Unit> = NullUnitSetterAdapter(this)
+
+internal fun <C : Any> JsTextMapSetter<C>.asCommonSetter(): TextMapSetter<C> = when (this) {
     is TextMapSetterJsAdapter<C> -> this.setter
-    is JsTextMapRecordSetter -> TextMapRecordSetter
+    is JsTextMapRecordSetter -> TextMapRecordSetter.unsafeCast<TextMapSetter<C>>()
     else -> TextMapSetterCommonAdapter(this)
 }
 

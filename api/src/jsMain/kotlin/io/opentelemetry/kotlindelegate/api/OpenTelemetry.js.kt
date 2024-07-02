@@ -6,6 +6,7 @@ import io.opentelemetry.kotlindelegate.api.trace.TracerBuilder
 import io.opentelemetry.kotlindelegate.api.trace.TracerProvider
 import io.opentelemetry.kotlindelegate.api.trace.TracerProviderWrapper
 import io.opentelemetry.kotlindelegate.context.propagation.ContextPropagators
+import io.opentelemetry.kotlindelegate.context.propagation.DelegateContextPropagator
 import io.opentelemetry.kotlindelegate.js.createNoopMeter
 import io.opentelemetry.kotlindelegate.js.MeterOptions as JsMeterOptions
 import io.opentelemetry.kotlindelegate.js.Meter as JsMeter
@@ -60,5 +61,9 @@ internal object OpenTelemetryImpl : OpenTelemetry {
 
     override fun getMeterProvider(): MeterProvider {
         return MeterProviderWrapper(JsMetricsAPI.getMeterProvider())
+    }
+
+    override fun getPropagators(): ContextPropagators {
+        return DelegateContextPropagator
     }
 }

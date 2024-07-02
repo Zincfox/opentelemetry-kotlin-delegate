@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_PARAMETER")
+
 package io.opentelemetry.kotlindelegate.js
 
 external interface JsRecord<K, T>

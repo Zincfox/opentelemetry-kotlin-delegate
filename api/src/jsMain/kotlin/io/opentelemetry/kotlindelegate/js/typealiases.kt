@@ -3,7 +3,7 @@ package io.opentelemetry.kotlindelegate.js
 import kotlin.js.Promise
 
 typealias AttributeValue = Any
-typealias BaggageEntryMetadata = Any
+external interface BaggageEntryMetadata
 typealias BatchObservableCallback<AttributeTypes> = (BatchObservableResult<AttributeTypes>) -> Promise<Unit>?
 typealias DiagLogFunction = (message: String, args: Array<dynamic>) -> Promise<Unit>
 typealias OtelException = Any

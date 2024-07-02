@@ -11,19 +11,32 @@ actual interface TextMapGetter<C> {
     actual fun get(carrier: C?, key: String): String?
 }
 
+private class NullUnitGetterAdapter(val getter: TextMapGetter<*>) : JsTextMapGetter<Unit> {
+
+    override fun keys(carrier: Unit): Array<String> {
+        return emptyArray()
+    }
+
+    override fun get(carrier: Unit, key: String): Any? {
+        return getter.get(null, key)
+    }
+}
+
 internal fun <C:Any> TextMapGetter<C>.asJsGetter(): JsTextMapGetter<C> = when(this) {
     is TextMapGetterCommonAdapter -> this.getter
     TextMapRecordGetter -> JsTextMapRecordGetter
     else -> TextMapGetterJsAdapter(this)
 }
 
-internal fun <C:Any> JsTextMapGetter<C>.asCommonGetter(): TextMapGetter<in C> = when(this) {
+internal fun <C : Any> TextMapGetter<C>.asNullUnitJsGetter(): JsTextMapGetter<Unit> = NullUnitGetterAdapter(this)
+
+internal fun <C : Any> JsTextMapGetter<C>.asCommonGetter(): TextMapGetter<C> = when (this) {
     is TextMapGetterJsAdapter<C> -> this.getter
-    JsTextMapRecordGetter -> TextMapRecordGetter
+    JsTextMapRecordGetter -> TextMapRecordGetter.unsafeCast<TextMapGetter<C>>()
     else -> TextMapGetterCommonAdapter(this)
 }
 
-private class TextMapGetterJsAdapter<in C : Any>(val getter: TextMapGetter<in C>) : JsTextMapGetter<C> {
+private class TextMapGetterJsAdapter<C : Any>(val getter: TextMapGetter<C>) : JsTextMapGetter<C> {
 
     override fun keys(carrier: C): Array<String> {
         return getter.keys(carrier).toList().toTypedArray()

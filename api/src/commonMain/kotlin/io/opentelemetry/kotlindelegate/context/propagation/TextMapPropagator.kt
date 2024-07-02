@@ -4,8 +4,8 @@ import io.opentelemetry.kotlindelegate.context.Context
 
 expect interface TextMapPropagator {
     fun fields(): Collection<String>
-    fun <C> inject(context: Context, carrier: C?, setter: TextMapSetter<C>)
-    fun <C> extract(context: Context, carrier: C?, getter: TextMapGetter<C>): Context
+    fun <C: Any> inject(context: Context, carrier: C?, setter: TextMapSetter<C>)
+    fun <C: Any> extract(context: Context, carrier: C?, getter: TextMapGetter<C>): Context
 }
 
 expect object TextMapPropagatorStatic {
