@@ -23,3 +23,4 @@ expect object ContextStatic {
 }
 
 expect inline fun <R> Context.runWithActive(crossinline block: ()->R): R
+expect suspend inline fun <R> Context.runWithActiveSuspend(crossinline block: suspend ()->R): R

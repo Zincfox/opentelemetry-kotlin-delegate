@@ -1,7 +1,9 @@
 package io.opentelemetry.kotlindelegate.context
 
 import io.opentelemetry.kotlindelegate.js.ROOT_CONTEXT
+import io.opentelemetry.kotlindelegate.utils.coroutines.JsContextContinuationInterceptor
 import io.opentelemetry.kotlindelegate.utils.java.*
+import kotlinx.coroutines.withContext
 import io.opentelemetry.kotlindelegate.js.Context as JsContext
 import io.opentelemetry.kotlindelegate.js.ContextKey as JsContextKey
 import io.opentelemetry.kotlindelegate.js.context as JsContextAPI
@@ -21,7 +23,7 @@ actual interface Context {
     actual fun wrap(runnable: Runnable): Runnable {
 
         return Runnable {
-            JsContextAPI.with<Unit, (Array<Unit>) -> Unit, Unit>(this.asJsContext(), {
+            JsContextAPI.with(this.asJsContext(), {
                 runnable.run()
             })
         }
@@ -29,7 +31,7 @@ actual interface Context {
 
     actual fun <T, U> wrapFunction(function: Function<T, U>): Function<T, U> {
         return Function { t ->
-            JsContextAPI.with<T, (Array<T>) -> U, U>(this.asJsContext(), {
+            JsContextAPI.with(this.asJsContext(), {
                 function.apply(t)
             })
         }
@@ -37,7 +39,7 @@ actual interface Context {
 
     actual fun <T, U, V> wrapFunction(function: BiFunction<T, U, V>): BiFunction<T, U, V> {
         return BiFunction { t, u ->
-            JsContextAPI.with<Any?, (Array<Any?>) -> V, V>(this.asJsContext(), {
+            JsContextAPI.with(this.asJsContext(), {
                 function.apply(t, u)
             })
         }
@@ -45,7 +47,7 @@ actual interface Context {
 
     actual fun <T> wrapConsumer(consumer: Consumer<T>): Consumer<T> {
         return Consumer { t ->
-            JsContextAPI.with<T, (Array<T>) -> Unit, Unit>(this.asJsContext(), {
+            JsContextAPI.with(this.asJsContext(), {
                 consumer.accept(t)
             })
         }
@@ -53,7 +55,7 @@ actual interface Context {
 
     actual fun <T, U> wrapConsumer(consumer: BiConsumer<T, U>): BiConsumer<T, U> {
         return BiConsumer { t, u ->
-            JsContextAPI.with<Any?, (Array<Any?>) -> Unit, Unit>(this.asJsContext(), {
+            JsContextAPI.with(this.asJsContext(), {
                 consumer.accept(t, u)
             })
         }
@@ -61,7 +63,7 @@ actual interface Context {
 
     actual fun <T> wrapSupplier(supplier: Supplier<T>): Supplier<T> {
         return Supplier {
-            JsContextAPI.with<Unit, (Array<Unit>) -> T, T>(this.asJsContext(), {
+            JsContextAPI.with(this.asJsContext(), {
                 supplier.get()
             })
         }
@@ -122,11 +124,21 @@ internal fun Context.asJsContext(): JsContext = when (this) {
 }
 
 fun <R> Context.runWithActiveImpl(block: () -> R): R {
-    return JsContextAPI.with<Unit, (Array<Unit>) -> R, R>(this.asJsContext(), {
+    return JsContextAPI.with(this.asJsContext(), {
         block()
     })
 }
 
+suspend fun <R> Context.runWithActiveSuspendImpl(block: suspend () -> R): R {
+    return withContext(JsContextContinuationInterceptor(asJsContext())) {
+        block()
+    }
+}
+
 actual inline fun <R> Context.runWithActive(crossinline block: () -> R): R {
-    return runWithActiveImpl {block()}
+    return runWithActiveImpl { block() }
+}
+
+actual suspend inline fun <R> Context.runWithActiveSuspend(crossinline block: suspend () -> R): R {
+    return runWithActiveSuspendImpl { block() }
 }

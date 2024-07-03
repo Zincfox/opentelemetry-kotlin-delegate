@@ -150,6 +150,7 @@ internal class SpanWrapper(val span: JsSpan): TimedSpan {
     }
 
     override fun recordException(exception: Throwable, additionalAttributes: Attributes): Span {
+        //Cannot record attributes because underlying JS library does not provide this functionality for exceptions.
         span.recordException(exception)
         return this
     }

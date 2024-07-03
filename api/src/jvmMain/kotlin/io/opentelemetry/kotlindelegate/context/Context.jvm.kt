@@ -1,5 +1,8 @@
 package io.opentelemetry.kotlindelegate.context
 
+import io.opentelemetry.extension.kotlin.asContextElement
+import kotlinx.coroutines.withContext
+
 actual typealias Context = io.opentelemetry.context.Context
 
 actual object ContextStatic {
@@ -11,4 +14,8 @@ actual object ContextStatic {
 
 actual inline fun <R> Context.runWithActive(crossinline block: () -> R): R {
     return makeCurrent().use { block() }
+}
+
+actual suspend inline fun <R> Context.runWithActiveSuspend(crossinline block: suspend () -> R): R {
+    return withContext(this.asContextElement()) {block()}
 }

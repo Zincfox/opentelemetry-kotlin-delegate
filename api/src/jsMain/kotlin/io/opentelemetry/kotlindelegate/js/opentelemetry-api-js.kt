@@ -10,11 +10,34 @@ external class ContextAPI protected constructor() {
     fun <T> bind(context: Context, target: T): T
     fun disable()
     fun setGlobalContextManager(contextManager: ContextManager): Boolean
-    fun <A, F : (args: Array<A>) -> R, R> with(
+    fun <F : () -> R, R> with(
         context: Context,
         fn: F,
         thisArg: Any? = definedExternally,
-        vararg args: A,
+    ): R
+
+    fun <A, F : (A) -> R, R> with(
+        context: Context,
+        fn: F,
+        thisArg: Any? = definedExternally,
+        arg: A,
+    ): R
+
+    fun <A, B, F : (A, B) -> R, R> with(
+        context: Context,
+        fn: F,
+        thisArg: Any? = definedExternally,
+        arg1: A,
+        arg2: B,
+    ): R
+
+    fun <A, B, C, F : (A, B, C) -> R, R> with(
+        context: Context,
+        fn: F,
+        thisArg: Any? = definedExternally,
+        arg1: A,
+        arg2: B,
+        arg3: C,
     ): R
 
     companion object {
@@ -72,9 +95,9 @@ external class PropagationAPI protected constructor() {
     fun getBaggage(context: Context): Baggage?
     fun setBaggage(context: Context, baggage: Baggage): Context
     fun disable()
-    fun <C:Any> extract(context: Context, carrier: C, getter: TextMapGetter<C>? = definedExternally): Context
+    fun <C : Any> extract(context: Context, carrier: C, getter: TextMapGetter<C>? = definedExternally): Context
     fun fields(): Array<String>
-    fun <C:Any> inject(context: Context, carrier: C, setter: TextMapSetter<C>? = definedExternally): Context
+    fun <C : Any> inject(context: Context, carrier: C, setter: TextMapSetter<C>? = definedExternally): Context
     fun setGlobalPropagator(propagator: TextMapPropagator<*>): Boolean
 
     companion object {

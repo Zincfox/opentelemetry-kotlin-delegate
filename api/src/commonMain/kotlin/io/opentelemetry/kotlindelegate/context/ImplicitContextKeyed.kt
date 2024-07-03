@@ -5,3 +5,4 @@ expect interface ImplicitContextKeyed {
 }
 
 expect inline fun <R> ImplicitContextKeyed.runWithActive(crossinline block: () -> R): R
+expect suspend inline fun <R> ImplicitContextKeyed.runWithActiveSuspend(crossinline block: suspend () -> R): R

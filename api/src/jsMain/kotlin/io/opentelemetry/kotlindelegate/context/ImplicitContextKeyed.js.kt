@@ -8,3 +8,9 @@ actual interface ImplicitContextKeyed {
 actual inline fun <R> ImplicitContextKeyed.runWithActive(crossinline block: () -> R): R {
     return storeInContext(ContextStatic.current()).runWithActive(block)
 }
+
+actual suspend inline fun <R> ImplicitContextKeyed.runWithActiveSuspend(
+    crossinline block: suspend () -> R,
+): R {
+    return storeInContext(ContextStatic.current()).runWithActiveSuspend(block)
+}

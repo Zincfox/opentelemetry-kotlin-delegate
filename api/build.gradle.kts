@@ -65,7 +65,9 @@ kotlin {
 
     sourceSets {
         val commonMain by getting {
-
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+            }
         }
         val commonTest by getting
         if (enableJvm) {
@@ -74,6 +76,7 @@ kotlin {
                     api(platform("io.opentelemetry:opentelemetry-bom:1.36.0"))
                     api("io.opentelemetry:opentelemetry-api:1.36.0")
                     api("io.opentelemetry:opentelemetry-context:1.36.0")
+                    implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.36.0")
                 }
             }
             val jvmTest by getting
