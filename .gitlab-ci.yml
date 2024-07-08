@@ -27,8 +27,9 @@ release:
     - VERSION="$(cat build.gradle.kts | grep "^version *= *" | awk -F"\"|\"" '{print $2}')"
     - TAG="v${VERSION}"
     - git tag -l "$TAG"
+    - git ls-remote --tags origin "$TAG"
     - >
-      if [ $(git tag -l "$TAG") ]; then
+      if (git ls-remote --exit-code --tags origin "$TAG"); then
         echo "Version tag $TAG already exists"
       else
         echo "Pushing new version tag $TAG"
