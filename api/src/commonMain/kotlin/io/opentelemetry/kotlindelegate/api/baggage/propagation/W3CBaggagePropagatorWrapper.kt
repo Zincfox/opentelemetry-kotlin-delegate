@@ -1,5 +1,0 @@
-package io.opentelemetry.kotlindelegate.api.baggage.propagation
-
-import io.opentelemetry.kotlindelegate.context.propagation.TextMapPropagatorWrapper
-
-expect val W3CBaggagePropagatorWrapper: TextMapPropagatorWrapper

@@ -1,11 +1,16 @@
 package io.opentelemetry.kotlindelegate.context
 
-actual open class ImplicitContextKeyedWrapper : IWrapper {
+actual interface ImplicitContextKeyed {
 
-    actual open fun makeCurrent() {
-    }
+    actual fun storeInContext(context: Context): Context
+}
 
-    actual open fun storeInContext(context: ContextWrapper): ContextWrapper {
-        TODO("Not yet implemented")
-    }
+actual inline fun <R> ImplicitContextKeyed.runWithActive(crossinline block: () -> R): R {
+    return storeInContext(ContextStatic.current()).runWithActive(block)
+}
+
+actual suspend inline fun <R> ImplicitContextKeyed.runWithActiveSuspend(
+    crossinline block: suspend () -> R,
+): R {
+    return storeInContext(ContextStatic.current()).runWithActiveSuspend(block)
 }

@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompileCommon
+
 plugins {
     kotlin("multiplatform") apply true
     `maven-publish`
@@ -19,6 +21,12 @@ if (enableJs) {
 kotlin {
     if (enableJvm) {
         jvm {
+            compilations.all {
+                kotlinOptions {
+                    freeCompilerArgs = listOf("-Xexpect-actual-classes", "-opt-in=kotlin.ExperimentalStdlibApi")
+                    jvmTarget = "17"
+                }
+            }
             jvmToolchain(17)
             withJava()
             testRuns.named("test") {
@@ -30,6 +38,11 @@ kotlin {
     }
     if (enableJs) {
         js(IR) {
+            compilations.all {
+                kotlinOptions {
+                    freeCompilerArgs += listOf("-Xexpect-actual-classes", "-opt-in=kotlin.ExperimentalStdlibApi")
+                }
+            }
             browser {
                 commonWebpackConfig {
                     cssSupport {
@@ -53,16 +66,17 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
             }
         }
         val commonTest by getting
         if (enableJvm) {
             val jvmMain by getting {
                 dependencies {
-                    api(platform("io.opentelemetry:opentelemetry-bom:1.28.0"))
-                    api("io.opentelemetry:opentelemetry-api:1.28.0")
-                    api("io.opentelemetry:opentelemetry-context:1.28.0")
+                    api(platform("io.opentelemetry:opentelemetry-bom:1.36.0"))
+                    api("io.opentelemetry:opentelemetry-api:1.36.0")
+                    api("io.opentelemetry:opentelemetry-context:1.36.0")
+                    implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.36.0")
                 }
             }
             val jvmTest by getting
@@ -70,11 +84,17 @@ kotlin {
         if (enableJs) {
             val jsMain by getting {
                 dependencies {
-                    api(npm("@opentelemetry/api", "^1.0.0"))
+                    api(npm("@opentelemetry/api", "^1.9.0"))
                 }
             }
             val jsTest by getting
         }
+    }
+}
+
+tasks.withType<KotlinCompileCommon> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xexpect-actual-classes", "-opt-in=kotlin.ExperimentalStdlibApi")
     }
 }
 

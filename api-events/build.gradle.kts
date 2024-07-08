@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("multiplatform") apply true
     `maven-publish`
@@ -59,7 +61,7 @@ kotlin {
         if (enableJvm) {
             val jvmMain by getting {
                 dependencies {
-                    api("io.opentelemetry:opentelemetry-api-events:1.28.0-alpha")
+                    api("io.opentelemetry:opentelemetry-api-events:1.36.0-alpha")
                 }
             }
             val jvmTest by getting
@@ -67,11 +69,18 @@ kotlin {
         if (enableJs) {
             val jsMain by getting {
                 dependencies {
-                    api(npm("@opentelemetry/api-events", "^0.41.1"))
+                    api(npm("@opentelemetry/api-events", "^0.52.1"))
                 }
             }
             val jsTest by getting
         }
+    }
+}
+
+tasks.withType<KotlinCompile> {
+    kotlinOptions {
+        freeCompilerArgs = listOf("-Xexpect-actual-classes")
+        jvmTarget = "17"
     }
 }
 
