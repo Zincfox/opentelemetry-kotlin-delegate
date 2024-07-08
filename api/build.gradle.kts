@@ -104,7 +104,7 @@ publishing {
     repositories {
         maven {
             setUrl("https://se-gitlab.inf.tu-dresden.de/api/v4/projects/2537/packages/maven")
-            name = "GitLab"
+            name = "GitLabPublish-opentelemetry-kotlin-delegate"
             credentials(HttpHeaderCredentials::class) {
                 name = "Job-Token"
                 value = System.getenv("CI_JOB_TOKEN")
