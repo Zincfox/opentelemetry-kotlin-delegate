@@ -50,6 +50,35 @@ internal class SpanContextWrapper(val jsSpanContext: JsSpanContext) : SpanContex
     override fun isRemote(): Boolean {
         return (jsSpanContext.isRemote == true)
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is SpanContext) return false
+        return if (other is SpanContextWrapper) {
+            (jsSpanContext.spanId == other.jsSpanContext.spanId) &&
+                    (jsSpanContext.traceId == other.jsSpanContext.traceId) &&
+                    (jsSpanContext.traceFlags == other.jsSpanContext.traceFlags) &&
+                    ((jsSpanContext.isRemote ?: false) == (other.jsSpanContext.isRemote ?: false)) &&
+                    ((jsSpanContext.traceState == other.jsSpanContext.traceState) ||
+                            (jsSpanContext.traceState?.serialize().orEmpty() ==
+                                    other.jsSpanContext.traceState?.serialize().orEmpty()))
+        } else {
+            (jsSpanContext.spanId == other.getSpanId()) &&
+                    (jsSpanContext.traceId == other.getTraceId()) &&
+                    (jsSpanContext.traceFlags == other.getTraceFlags().asByte()) &&
+                    ((jsSpanContext.isRemote ?: false) == other.isRemote()) &&
+                    (jsSpanContext.traceState?.serialize().orEmpty() ==
+                            other.getTraceState().asJsTraceState().serialize())
+        }
+    }
+
+    override fun hashCode(): Int {
+        var hash = jsSpanContext.spanId.hashCode()
+        hash = hash * 31 + jsSpanContext.traceId.hashCode()
+        hash = hash * 31 + jsSpanContext.traceFlags.hashCode()
+        hash = hash * 31 + jsSpanContext.isRemote.hashCode()
+        return hash
+    }
 }
 
 fun SpanContext.asJsSpanContext(): JsSpanContext = when (this) {
@@ -91,13 +120,15 @@ actual object SpanContextStatic {
         traceFlags: TraceFlags,
         traceState: TraceState,
     ): SpanContext {
-        return SpanContextWrapper(createJs(
-            traceIdHex,
-            spanIdHex,
-            traceFlags.asByte(),
-            traceState.asJsTraceState(),
-            false
-        ))
+        return SpanContextWrapper(
+            createJs(
+                traceIdHex,
+                spanIdHex,
+                traceFlags.asByte(),
+                traceState.asJsTraceState(),
+                false
+            )
+        )
     }
 
     actual fun createFromRemoteParent(
@@ -106,12 +137,14 @@ actual object SpanContextStatic {
         traceFlags: TraceFlags,
         traceState: TraceState,
     ): SpanContext {
-        return SpanContextWrapper(createJs(
-            traceIdHex,
-            spanIdHex,
-            traceFlags.asByte(),
-            traceState.asJsTraceState(),
-            true
-        ))
+        return SpanContextWrapper(
+            createJs(
+                traceIdHex,
+                spanIdHex,
+                traceFlags.asByte(),
+                traceState.asJsTraceState(),
+                true
+            )
+        )
     }
 }
