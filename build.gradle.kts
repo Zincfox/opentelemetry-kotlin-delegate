@@ -7,7 +7,7 @@ plugins {
 val enableJvm: Boolean by extra(true)
 val enableJs: Boolean by extra(true)
 
-version = "0.2.0-preview.2"
+version = "0.2.0"
 group = "io.opentelemetry.kotlin-delegate"
 
 childProjects.values.forEach {
