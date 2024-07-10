@@ -35,3 +35,6 @@ internal class UpDownCounterWrapper(
         jsCounter.add(value, attributes.asJsAttributes(), context.asJsContext())
     }
 }
+
+fun UpDownCounter<Attributes>.asCommonLongUpDownCounter(): LongUpDownCounter = UpDownCounterWrapper(this)
+fun UpDownCounter<Attributes>.asCommonDoubleUpDownCounter(): DoubleUpDownCounter = UpDownCounterWrapper(this)

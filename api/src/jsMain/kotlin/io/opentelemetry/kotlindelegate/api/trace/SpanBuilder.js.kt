@@ -1,11 +1,10 @@
 package io.opentelemetry.kotlindelegate.api.trace
 
 import io.opentelemetry.kotlindelegate.api.common.*
+import io.opentelemetry.kotlindelegate.api.common.Attributes
 import io.opentelemetry.kotlindelegate.context.Context
 import io.opentelemetry.kotlindelegate.context.asJsContext
-import io.opentelemetry.kotlindelegate.js.HrTime
-import io.opentelemetry.kotlindelegate.js.SpanOptions
-import io.opentelemetry.kotlindelegate.js.jsPairOf
+import io.opentelemetry.kotlindelegate.js.*
 import io.opentelemetry.kotlindelegate.js.Tracer as JsTracer
 import io.opentelemetry.kotlindelegate.js.Link as JsLink
 import io.opentelemetry.kotlindelegate.js.SpanKind as JsSpanKind
@@ -192,15 +191,6 @@ internal class SpanBuilderImpl(val name: String, val tracer: JsTracer) : TimedSp
         }
         return SpanWrapper(span)
     }
-}
-
-fun nanosToHrTime(nanos: Long): HrTime {
-    return jsPairOf(nanos / 1_000_000_000, nanos % 1_000_000_000)
-}
-
-fun millisToHrTime(millis: Long): HrTime {
-    val seconds = millis / 1000
-    return jsPairOf(seconds, (millis - seconds * 1000) * 1_000_000)
 }
 
 actual fun SpanBuilder.setStartTimestampMillis(startTimestampMillis: Long): SpanBuilder {

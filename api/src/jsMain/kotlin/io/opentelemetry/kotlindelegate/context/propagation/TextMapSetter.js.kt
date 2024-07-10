@@ -30,15 +30,15 @@ private class NullUnitSetterAdapter(val setter: TextMapSetter<*>): JsTextMapSett
     }
 }
 
-internal fun <C : Any> TextMapSetter<C>.asJsSetter(): JsTextMapSetter<C> = when (this) {
+fun <C : Any> TextMapSetter<C>.asJsTextMapSetter(): JsTextMapSetter<C> = when (this) {
     is TextMapSetterCommonAdapter<C> -> this.setter
     is TextMapRecordSetter -> JsTextMapRecordSetter
     else -> TextMapSetterJsAdapter(this)
 }
 
-internal fun <C> TextMapSetter<C>.asNullUnitJsSetter(): JsTextMapSetter<Unit> = NullUnitSetterAdapter(this)
+fun <C> TextMapSetter<C>.asNullUnitJsTextMapSetter(): JsTextMapSetter<Unit> = NullUnitSetterAdapter(this)
 
-internal fun <C : Any> JsTextMapSetter<C>.asCommonSetter(): TextMapSetter<C> = when (this) {
+fun <C : Any> JsTextMapSetter<C>.asCommonTextMapSetter(): TextMapSetter<C> = when (this) {
     is TextMapSetterJsAdapter<C> -> this.setter
     is JsTextMapRecordSetter -> TextMapRecordSetter.unsafeCast<TextMapSetter<C>>()
     else -> TextMapSetterCommonAdapter(this)

@@ -92,6 +92,8 @@ fun SpanContext.asJsSpanContext(): JsSpanContext = when (this) {
     )
 }
 
+fun JsSpanContext.asCommonSpanContext(): SpanContext = SpanContextWrapper(this)
+
 actual object SpanContextStatic {
 
     actual fun getInvalid(): SpanContext {

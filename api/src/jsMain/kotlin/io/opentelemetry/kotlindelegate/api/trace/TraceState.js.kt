@@ -78,6 +78,8 @@ fun TraceState.asJsTraceState(): JsTraceState = when (this) {
     }
 }
 
+fun JsTraceState.asCommonTraceState(): TraceState = TraceStateCommonImpl(this)
+
 actual object TraceStateStatic {
 
     internal val defaultJsTraceState: JsTraceState = createTraceState()

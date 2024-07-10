@@ -22,15 +22,15 @@ private class NullUnitGetterAdapter(val getter: TextMapGetter<*>) : JsTextMapGet
     }
 }
 
-internal fun <C:Any> TextMapGetter<C>.asJsGetter(): JsTextMapGetter<C> = when(this) {
+fun <C:Any> TextMapGetter<C>.asJsTextMapGetter(): JsTextMapGetter<C> = when(this) {
     is TextMapGetterCommonAdapter -> this.getter
     TextMapRecordGetter -> JsTextMapRecordGetter
     else -> TextMapGetterJsAdapter(this)
 }
 
-internal fun <C : Any> TextMapGetter<C>.asNullUnitJsGetter(): JsTextMapGetter<Unit> = NullUnitGetterAdapter(this)
+fun <C : Any> TextMapGetter<C>.asNullUnitJsTextMapGetter(): JsTextMapGetter<Unit> = NullUnitGetterAdapter(this)
 
-internal fun <C : Any> JsTextMapGetter<C>.asCommonGetter(): TextMapGetter<C> = when (this) {
+fun <C : Any> JsTextMapGetter<C>.asCommonTextMapGetter(): TextMapGetter<C> = when (this) {
     is TextMapGetterJsAdapter<C> -> this.getter
     JsTextMapRecordGetter -> TextMapRecordGetter.unsafeCast<TextMapGetter<C>>()
     else -> TextMapGetterCommonAdapter(this)

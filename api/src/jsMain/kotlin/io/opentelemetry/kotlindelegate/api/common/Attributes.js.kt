@@ -14,7 +14,7 @@ actual interface Attributes {
 }
 
 internal class AttributesImpl
-private constructor(val map: Map<AttributeKey<*>, Any>, val jsAttributes: JSAttributes) : Attributes {
+private constructor(val map: Map<AttributeKey<*>, Any>, internal val jsAttributes: JSAttributes) : Attributes {
 
     companion object {
 
@@ -38,6 +38,43 @@ private constructor(val map: Map<AttributeKey<*>, Any>, val jsAttributes: JSAttr
     }
 
     internal constructor(map: Map<AttributeKey<*>, Any> = emptyMap()) : this(map, toJSAttributes(map))
+    internal constructor(attributes: JSAttributes) : this(attributes.toMap().mapNotNull { (key, value) ->
+        when (value) {
+            null -> return@mapNotNull null
+            is String -> AttributeKeyStatic.stringKey(key)
+
+            is Boolean -> AttributeKeyStatic.booleanKey(key)
+
+            is Long, is ULong,
+            is Int, is UInt,
+            is Short, is UShort,
+            is Byte, is UByte,
+            -> AttributeKeyStatic.longKey(key)
+
+            is Number -> AttributeKeyStatic.doubleKey(key)
+
+            is Array<*> -> {
+                if (value.isEmpty()) return@mapNotNull null
+                when (value[0]) {
+                    is String -> AttributeKeyStatic.stringArrayKey(key)
+                    is Boolean -> AttributeKeyStatic.booleanArrayKey(key)
+                    is Double, Float -> AttributeKeyStatic.doubleArrayKey(key)
+                    else -> {
+                        if (value.all {
+                                it is Long || it is ULong ||
+                                        it is Int || it is UInt ||
+                                        it is Short || it is UShort ||
+                                        it is Byte || it is UByte
+                            })
+                            AttributeKeyStatic.longArrayKey(key)
+                        else
+                            AttributeKeyStatic.doubleArrayKey(key)
+                    }
+                }
+            }
+            else -> return@mapNotNull null
+        } to value
+    }.toMap(), attributes)
 
     override fun forEach(consumer: BiConsumer<in AttributeKey<*>, in Any>) =
         map.forEach { consumer.accept(it.key, it.value) }
@@ -54,6 +91,8 @@ fun Attributes.asJsAttributes(): JSAttributes = when (this) {
     is AttributesImpl -> jsAttributes
     else -> AttributesImpl.toJSAttributes(asMap())
 }
+
+fun JSAttributes.asCommonAttributes(): Attributes = AttributesImpl(this)
 
 actual object AttributesStatic {
 

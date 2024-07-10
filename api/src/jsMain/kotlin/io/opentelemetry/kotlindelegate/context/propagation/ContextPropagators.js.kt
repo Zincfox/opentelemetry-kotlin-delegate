@@ -10,7 +10,7 @@ actual interface ContextPropagators {
     actual fun getTextMapPropagator(): TextMapPropagator
 }
 
-internal object DelegateTextmapPropagator : TextMapPropagator {
+internal object DelegateTextMapPropagator : TextMapPropagator {
 
     override fun fields(): Collection<String> {
         return JsPropagationAPI.fields().toList()
@@ -18,17 +18,17 @@ internal object DelegateTextmapPropagator : TextMapPropagator {
 
     override fun <C : Any> extract(context: Context, carrier: C?, getter: TextMapGetter<C>): Context {
         return if (carrier == null) {
-            JsPropagationAPI.extract(context.asJsContext(), Unit, getter.asNullUnitJsGetter()).asCommonContext()
+            JsPropagationAPI.extract(context.asJsContext(), Unit, getter.asNullUnitJsTextMapGetter()).asCommonContext()
         } else {
-            JsPropagationAPI.extract(context.asJsContext(), carrier, getter.asJsGetter()).asCommonContext()
+            JsPropagationAPI.extract(context.asJsContext(), carrier, getter.asJsTextMapGetter()).asCommonContext()
         }
     }
 
     override fun <C : Any> inject(context: Context, carrier: C?, setter: TextMapSetter<C>) {
         if (carrier == null) {
-            JsPropagationAPI.inject(context.asJsContext(), Unit, setter.asNullUnitJsSetter())
+            JsPropagationAPI.inject(context.asJsContext(), Unit, setter.asNullUnitJsTextMapSetter())
         } else {
-            JsPropagationAPI.inject(context.asJsContext(), carrier, setter.asJsSetter())
+            JsPropagationAPI.inject(context.asJsContext(), carrier, setter.asJsTextMapSetter())
         }
     }
 }
@@ -36,7 +36,7 @@ internal object DelegateTextmapPropagator : TextMapPropagator {
 internal object DelegateContextPropagator : ContextPropagators {
 
     override fun getTextMapPropagator(): TextMapPropagator {
-        return DelegateTextmapPropagator
+        return DelegateTextMapPropagator
     }
 }
 

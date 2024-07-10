@@ -26,6 +26,16 @@ fun <K> JsRecord<K, *>.keys(): Array<K> = jsRecordKeys(this)
 
 fun <K, T> JsRecord<K, T>.toMap(): Map<K, T> = keys().associateWith { this[it] }
 
+fun <K1, T1, K2, T2> JsRecord<K1, T1>.associate(transform: (Pair<K1,T1>) -> Pair<K2,T2>): JsRecord<K2, T2> {
+    val result = js("{}").unsafeCast<JsRecord<K2, T2>>()
+    keys().forEach { key ->
+        val value = get(key)
+        val transformResult = transform(key to value)
+        result[transformResult.first] = transformResult.second
+    }
+    return result
+}
+
 fun <K, T, M : MutableMap<in K, in T>> JsRecord<K, T>.toMap(target: M) = target.also { m ->
     keys().associateWithTo(m) { this[it] }
 }

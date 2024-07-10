@@ -112,13 +112,13 @@ private open class ContextCommonAdapter(val context: JsContext) : Context {
 
 private object RootContextCommonAdapter : ContextCommonAdapter(ROOT_CONTEXT)
 
-internal fun JsContext.asCommonContext(): Context = when (this) {
+fun JsContext.asCommonContext(): Context = when (this) {
     is ContextJsAdapter -> this.context
     ROOT_CONTEXT -> RootContextCommonAdapter
     else -> ContextCommonAdapter(this)
 }
 
-internal fun Context.asJsContext(): JsContext = when (this) {
+fun Context.asJsContext(): JsContext = when (this) {
     is ContextCommonAdapter -> this.context
     else -> ContextJsAdapter(this)
 }

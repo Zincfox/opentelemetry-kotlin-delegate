@@ -15,7 +15,7 @@ actual interface TracerProvider {
     }
 }
 
-class TracerProviderWrapper(val provider: JsTracerProvider): TracerProvider {
+internal class TracerProviderWrapper(val provider: JsTracerProvider): TracerProvider {
 
     override fun get(instrumentationScopeName: String): Tracer {
         return tracerBuilder(instrumentationScopeName).build()
@@ -29,3 +29,5 @@ class TracerProviderWrapper(val provider: JsTracerProvider): TracerProvider {
         return TracerBuilderImpl(instrumentationScopeName, provider)
     }
 }
+
+fun JsTracerProvider.asCommonTracerProvider(): TracerProvider = TracerProviderWrapper(this)

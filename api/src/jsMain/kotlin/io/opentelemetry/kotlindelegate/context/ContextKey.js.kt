@@ -34,4 +34,5 @@ internal class ContextKeyCommonAdapter<T>(override val innerContextKey: JsContex
     }
 }
 
-internal fun <T> JsContextKey.asCommonContextKey(): ContextKey<T> = ContextKeyCommonAdapter(this)
+fun <T> JsContextKey.asCommonContextKey(): IContextKeyAdapter<T> = ContextKeyCommonAdapter(this)
+fun IContextKeyAdapter<*>.asJsContextKey(): JsContextKey = innerContextKey

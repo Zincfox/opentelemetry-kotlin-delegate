@@ -72,3 +72,5 @@ internal class MeterWrapper(val meter: JsMeter) : Meter {
         }
     }
 }
+
+fun JsMeter.asCommonMeter(): Meter = MeterWrapper(this)

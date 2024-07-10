@@ -17,3 +17,5 @@ internal class MeterProviderWrapper(val provider: JsMeterProvider) : MeterProvid
         return MeterBuilderImpl(instrumentationScopeName, provider)
     }
 }
+
+fun JsMeterProvider.asCommonMeterProvider(): MeterProvider = MeterProviderWrapper(this)

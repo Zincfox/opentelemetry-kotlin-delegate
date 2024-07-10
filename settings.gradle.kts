@@ -12,3 +12,4 @@ plugins {
 }
 include("api")
 include("api-events")
+include("test-utils")

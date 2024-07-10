@@ -62,3 +62,6 @@ internal class ObservableMeasurementDelegate(val recorder: ObservableResult<JsAt
         recorder.observe(recorder, value, attributes.asJsAttributes())
     }
 }
+
+fun ObservableResult<JsAttributes>.asCommonLongMeasurement(): ObservableLongMeasurement = ObservableMeasurementDelegate(this)
+fun ObservableResult<JsAttributes>.asCommonDoubleMeasurement(): ObservableDoubleMeasurement = ObservableMeasurementDelegate(this)

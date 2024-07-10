@@ -86,7 +86,7 @@ internal class TextMapPropagatorJsAdapter<C : Any>(val propagator: TextMapPropag
             if (setter == null || setter == undefined) {
                 TextMapRecordSetter.forType()
             } else {
-                setter.asCommonSetter()
+                setter.asCommonTextMapSetter()
             }
         propagator.inject(context.asCommonContext(), carrier, effectiveSetter)
     }
@@ -100,7 +100,7 @@ internal class TextMapPropagatorJsAdapter<C : Any>(val propagator: TextMapPropag
             if (getter == null || getter == undefined) {
                 TextMapRecordGetter.forType()
             } else {
-                getter.asCommonGetter()
+                getter.asCommonTextMapGetter()
             }
         return propagator.extract(context.asCommonContext(), carrier, effectiveGetter).asJsContext()
     }
@@ -116,20 +116,20 @@ internal class TextMapPropagatorCommonAdapter<Carrier : Any>(val propagator: JsT
     override fun <C : Any> inject(context: Context, carrier: C?, setter: TextMapSetter<C>) {
         if (carrier == null) {
             propagator.unsafeCast<JsTextMapPropagator<Unit>>()
-                .inject(context.asJsContext(), Unit, setter.asNullUnitJsSetter())
+                .inject(context.asJsContext(), Unit, setter.asNullUnitJsTextMapSetter())
         } else {
             propagator.unsafeCast<JsTextMapPropagator<C>>()
-                .inject(context.asJsContext(), carrier, setter.asJsSetter())
+                .inject(context.asJsContext(), carrier, setter.asJsTextMapSetter())
         }
     }
 
     override fun <C : Any> extract(context: Context, carrier: C?, getter: TextMapGetter<C>): Context {
         return (if (carrier == null) {
             propagator.unsafeCast<JsTextMapPropagator<Unit>>()
-                .extract(context.asJsContext(), Unit, getter.asNullUnitJsGetter())
+                .extract(context.asJsContext(), Unit, getter.asNullUnitJsTextMapGetter())
         } else {
             propagator.unsafeCast<JsTextMapPropagator<C>>()
-                .extract(context.asJsContext(), carrier, getter.asJsGetter())
+                .extract(context.asJsContext(), carrier, getter.asJsTextMapGetter())
         }).asCommonContext()
     }
 }

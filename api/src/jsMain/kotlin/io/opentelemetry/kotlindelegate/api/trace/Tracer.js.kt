@@ -13,3 +13,5 @@ internal class TracerWrapper(val tracer: JsTracer): Tracer {
         return SpanBuilderImpl(spanName, tracer)
     }
 }
+
+fun JsTracer.asCommonTracer(): Tracer = TracerWrapper(this)

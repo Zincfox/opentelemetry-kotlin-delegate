@@ -1,10 +1,11 @@
 package io.opentelemetry.kotlindelegate.api.trace
 
 import io.opentelemetry.kotlindelegate.api.common.*
+import io.opentelemetry.kotlindelegate.api.common.Attributes
 import io.opentelemetry.kotlindelegate.context.*
+import io.opentelemetry.kotlindelegate.context.Context
 import io.opentelemetry.kotlindelegate.context.asJsContext
-import io.opentelemetry.kotlindelegate.js.INVALID_SPAN_CONTEXT
-import io.opentelemetry.kotlindelegate.js.SpanStatus
+import io.opentelemetry.kotlindelegate.js.*
 import io.opentelemetry.kotlindelegate.js.trace
 import io.opentelemetry.kotlindelegate.js.Span as JsSpan
 import io.opentelemetry.kotlindelegate.js.trace as JsTraceAPI
@@ -177,6 +178,8 @@ internal class SpanWrapper(val span: JsSpan): TimedSpan {
         return span.isRecording()
     }
 }
+
+fun JsSpan.asCommonSpan(): TimedSpan = SpanWrapper(this)
 
 actual object SpanStatic {
 

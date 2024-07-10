@@ -36,3 +36,6 @@ internal class CounterWrapper(
         jsCounter.add(value, attributes.asJsAttributes(), context.asJsContext())
     }
 }
+
+fun Counter<JsAttributes>.asCommonLongCounter(): LongCounter = CounterWrapper(this)
+fun Counter<JsAttributes>.asCommonDoubleCounter(): DoubleCounter = CounterWrapper(this)

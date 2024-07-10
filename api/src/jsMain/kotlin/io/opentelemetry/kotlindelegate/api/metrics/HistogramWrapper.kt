@@ -36,3 +36,6 @@ internal class HistogramWrapper(
         jsCounter.record(value, attributes.asJsAttributes(), context.asJsContext())
     }
 }
+
+fun Histogram<JsAttributes>.asCommonLongHistogram(): LongHistogram = HistogramWrapper(this)
+fun Histogram<JsAttributes>.asCommonDoubleHistogram(): DoubleHistogram = HistogramWrapper(this)
