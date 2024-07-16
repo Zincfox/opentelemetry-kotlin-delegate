@@ -6,10 +6,26 @@ actual interface AttributeKey<T> {
     actual fun getType(): AttributeType
 }
 
-internal class AttributeKeyImpl<T>(val key: String, val type: AttributeType) : AttributeKey<T> {
+internal class AttributeKeyImpl<T>(val key: String, val type: AttributeType) : AttributeKey<T>, Comparable<AttributeKey<*>> {
 
     override fun getKey(): String = key
     override fun getType(): AttributeType = type
+
+    override fun toString(): String {
+        return "AttributeKeyImpl(key='$key', type=${type.name})"
+    }
+
+    override fun hashCode(): Int {
+        return key.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        return other === this || (other != null && other is AttributeKey<*> && other.getKey() == key)
+    }
+
+    override fun compareTo(other: AttributeKey<*>): Int {
+        return key.compareTo(other.getKey())
+    }
 }
 
 actual object AttributeKeyStatic {

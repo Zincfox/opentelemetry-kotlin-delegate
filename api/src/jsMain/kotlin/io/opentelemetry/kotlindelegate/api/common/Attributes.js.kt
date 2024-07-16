@@ -6,6 +6,7 @@ import io.opentelemetry.kotlindelegate.js.Attributes as JSAttributes
 
 actual interface Attributes {
 
+    actual operator fun <T : Any> get(key: AttributeKey<T>): T?
     actual fun forEach(consumer: BiConsumer<in AttributeKey<*>, in Any>)
     actual fun size(): Int
     actual fun isEmpty(): Boolean
@@ -49,7 +50,7 @@ private constructor(val map: Map<AttributeKey<*>, Any>, internal val jsAttribute
             is Int, is UInt,
             is Short, is UShort,
             is Byte, is UByte,
-            -> AttributeKeyStatic.longKey(key)
+                -> AttributeKeyStatic.longKey(key)
 
             is Number -> AttributeKeyStatic.doubleKey(key)
 
@@ -75,6 +76,8 @@ private constructor(val map: Map<AttributeKey<*>, Any>, internal val jsAttribute
             else -> return@mapNotNull null
         } to value
     }.toMap(), attributes)
+
+    override fun <T : Any> get(key: AttributeKey<T>): T? = map[key]?.unsafeCast<T>()
 
     override fun forEach(consumer: BiConsumer<in AttributeKey<*>, in Any>) =
         map.forEach { consumer.accept(it.key, it.value) }

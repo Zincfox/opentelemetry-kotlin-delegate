@@ -1,8 +1,21 @@
 package io.opentelemetry.kotlindelegate.test.tracedsl
 
-import io.opentelemetry.kotlindelegate.api.trace.Span
+import io.opentelemetry.kotlindelegate.test.SpanMatchingStrategy
+import io.opentelemetry.kotlindelegate.test.TraceForestRecorder
 
-interface TraceAsserter {
+interface TraceAsserter : SpanDataContainerAsserter<SpanDataAsserter<*>> {
+
     val traceId: String
-    val children: List<Span>
+    override val path: String
+        get() = "'$traceId'"
+
+    class DefaultTraceAsserter(
+        val recorder: TraceForestRecorder,
+        override val traceId: String,
+    ) : TraceAsserter {
+
+        override val directChildren: Sequence<SpanDataAsserter<*>>
+            get() = recorder.getTraceRootSpans(traceId).asSequence()
+                .map { SpanDataAsserter.DefaultSpanDataAsserter(recorder, it) }
+    }
 }

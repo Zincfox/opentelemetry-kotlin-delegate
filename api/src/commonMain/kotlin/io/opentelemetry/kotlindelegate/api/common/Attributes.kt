@@ -4,6 +4,7 @@ import io.opentelemetry.kotlindelegate.utils.java.BiConsumer
 
 expect interface Attributes {
 
+    operator fun <T : Any> get(key: AttributeKey<T>): T?
     fun forEach(consumer: BiConsumer<in AttributeKey<*>, in Any>)
     fun size(): Int
     fun isEmpty(): Boolean
@@ -14,9 +15,9 @@ expect interface Attributes {
 expect object AttributesStatic {
 
     fun empty(): Attributes
-    fun <T: Any> of(key: AttributeKey<T>, value: T): Attributes
-    fun <T: Any, U: Any> of(key1: AttributeKey<T>, value1: T, key2: AttributeKey<U>, value2: U): Attributes
-    fun <T: Any, U: Any, V: Any> of(
+    fun <T : Any> of(key: AttributeKey<T>, value: T): Attributes
+    fun <T : Any, U : Any> of(key1: AttributeKey<T>, value1: T, key2: AttributeKey<U>, value2: U): Attributes
+    fun <T : Any, U : Any, V : Any> of(
         key1: AttributeKey<T>,
         value1: T,
         key2: AttributeKey<U>,
@@ -25,7 +26,7 @@ expect object AttributesStatic {
         value3: V,
     ): Attributes
 
-    fun <T: Any, U: Any, V: Any, W: Any> of(
+    fun <T : Any, U : Any, V : Any, W : Any> of(
         key1: AttributeKey<T>,
         value1: T,
         key2: AttributeKey<U>,
@@ -36,7 +37,7 @@ expect object AttributesStatic {
         value4: W,
     ): Attributes
 
-    fun <T: Any, U: Any, V: Any, W: Any, X: Any> of(
+    fun <T : Any, U : Any, V : Any, W : Any, X : Any> of(
         key1: AttributeKey<T>,
         value1: T,
         key2: AttributeKey<U>,
@@ -49,7 +50,7 @@ expect object AttributesStatic {
         value5: X,
     ): Attributes
 
-    fun <T: Any, U: Any, V: Any, W: Any, X: Any, Y: Any> of(
+    fun <T : Any, U : Any, V : Any, W : Any, X : Any, Y : Any> of(
         key1: AttributeKey<T>,
         value1: T,
         key2: AttributeKey<U>,

@@ -1,11 +1,14 @@
 package io.opentelemetry.kotlindelegate.test
 
 import io.opentelemetry.kotlindelegate.api.trace.SpanContext
+import io.opentelemetry.kotlindelegate.test.tracedsl.TraceForestAsserter
+import kotlin.jvm.JvmName
 
 @OptIn(ExperimentalStdlibApi::class)
 interface TraceForestRecorder {
 
     val traces: List<String>
+    fun getTraceSpans(traceId: String): List<SpanData>
     fun getTraceRootSpans(traceId: String): List<SpanData>
     fun getSpanChildren(traceId: String, spanId: String): List<SpanData>
     fun getSpanChildren(spanContext: SpanContext): List<SpanData> =
@@ -31,6 +34,46 @@ interface TraceForestRecorder {
     }
 }
 
+@OptIn(ExperimentalStdlibApi::class)
+inline fun TraceForestRecorder.alsoRecord(recordedBlock: () -> Unit): TraceForestRecorder =
+    also { it.record().use { recordedBlock() } }
+
+@OptIn(ExperimentalStdlibApi::class)
+@JvmName("alsoRecordNullable")
+inline fun TraceForestRecorder?.alsoRecord(recordedBlock: () -> Unit): TraceForestRecorder? {
+    return if(this == null) {
+        recordedBlock()
+        null
+    }
+    else {
+        also { it.record().use { recordedBlock() } }
+    }
+}
+
+@OptIn(ExperimentalStdlibApi::class)
+inline fun <T> TraceForestRecorder.recordAssert(
+    recordedBlock: () -> T,
+    assertionBlock: TraceForestAsserter.() -> Unit,
+): T {
+    val result = record().use { recordedBlock() }
+    TraceForestAsserter.DefaultTraceForestAsserter(this).assertionBlock()
+    return result
+}
+
+@OptIn(ExperimentalStdlibApi::class)
+@JvmName("recordAssertNullable")
+inline fun <T> TraceForestRecorder?.recordAssert(
+    recordedBlock: () -> T,
+    assertionBlock: TraceForestAsserter.() -> Unit,
+): T {
+    if(this == null) {
+        return recordedBlock()
+    }
+    val result = record().use { recordedBlock() }
+    TraceForestAsserter.DefaultTraceForestAsserter(this).assertionBlock()
+    return result
+}
+
 operator fun TraceForestRecorder.get(traceId: String): List<SpanData> = getTraceRootSpans(traceId)
 operator fun TraceForestRecorder.get(spanContext: SpanContext): List<SpanData> = getSpanChildren(spanContext)
 operator fun TraceForestRecorder.get(span: SpanData): List<SpanData> = getSpanChildren(span)
@@ -48,28 +91,34 @@ abstract class AbstractTraceForestRecorder(startActive: Boolean = false) : Trace
         private val storedParents: MutableMap<String, String> = mutableMapOf()
 
         fun childSpans(spanId: String): List<SpanData> =
-            children.getOrElse(spanId) { throw NoSuchElementException("TraceID '${traceId}' not found") }.map {
+            children.getOrElse(spanId) {
+                if (spanId in spans)
+                    return emptyList()
+                else
+                    throw NoSuchElementException("Span '${spanId}' not found in trace '$traceId'")
+            }.map {
                 spans.getValue(it)
             }
 
         fun rootSpans(): List<SpanData> = spans.mapNotNull {
-            if(it.key in storedParents)
+            if (it.key in storedParents)
                 return@mapNotNull null
             else
                 it.value
         }
+
         fun allSpans(): Map<String, SpanData> = spans.toMap()
 
         fun store(span: SpanData) {
             spans[span.spanId] = span
             val storedParent = storedParents[span.spanId]
-            if(storedParent != null && storedParent != span.parentSpanId) {
+            if (storedParent != null && storedParent != span.parentSpanId) {
                 children.getValue(storedParent).remove(span.spanId)
                 storedParents.remove(span.spanId)
             }
             val parentSpanId = span.parentSpanId
-            if(parentSpanId != null){
-                children.getOrPut(span.spanId) { mutableListOf() }.add(span.spanId)
+            if (!parentSpanId.isNullOrEmpty()) {
+                children.getOrPut(parentSpanId) { mutableListOf() }.add(span.spanId)
                 storedParents[span.spanId] = parentSpanId
             }
         }
@@ -83,9 +132,15 @@ abstract class AbstractTraceForestRecorder(startActive: Boolean = false) : Trace
             .childSpans(spanId)
     }
 
-    override fun getTraceRootSpans(traceId: String): List<SpanData> {
+    override fun getTraceSpans(traceId: String): List<SpanData> {
         return _traces.getOrElse(traceId) { throw NoSuchElementException("TraceID '${traceId}' not found") }
-            .rootSpans()
+            .allSpans().values.toList()
+    }
+
+    override fun getTraceRootSpans(traceId: String): List<SpanData> {
+        return _traces.getOrElse(traceId) {
+            throw NoSuchElementException("TraceID '${traceId}' not found")
+        }.rootSpans()
     }
 
     override var isActive: Boolean = startActive

@@ -55,6 +55,7 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 api(project(":api"))
+                implementation(kotlin("test"))
             }
         }
         val commonTest by getting
