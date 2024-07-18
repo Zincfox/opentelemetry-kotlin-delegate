@@ -1,11 +1,13 @@
 package io.opentelemetry.kotlindelegate.test
 
 import io.opentelemetry.sdk.common.CompletableResultCode
-import io.opentelemetry.sdk.trace.data.SpanData as JvmSpanData
 import io.opentelemetry.sdk.trace.export.SpanExporter
+import io.opentelemetry.sdk.trace.data.SpanData as JvmSpanData
 
-class TraceForestRecorderImpl(startActive: Boolean = false) :
+class TraceForestRecorderImpl(startActive: Boolean) :
         AbstractTraceForestRecorder(startActive), SpanExporter {
+
+    constructor() : this(false)
 
     override fun export(spans: MutableCollection<JvmSpanData>): CompletableResultCode {
         spans.forEach { span ->

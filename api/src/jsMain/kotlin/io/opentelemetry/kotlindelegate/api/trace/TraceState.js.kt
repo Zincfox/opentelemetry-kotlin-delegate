@@ -32,7 +32,8 @@ internal class TraceStateCommonImpl(val jsTraceState: JsTraceState) : TraceState
         private val whitespaceRegex = Regex("\\s+")
 
         fun parse(jsTraceState: JsTraceState): List<Pair<String, String>> {
-            return jsTraceState.serialize().replace(whitespaceRegex, "").split(',').map {
+            return jsTraceState.serialize().replace(whitespaceRegex, "").split(',').mapNotNull {
+                if(it.isEmpty()) return@mapNotNull null
                 val (key, value) = it.split('=', limit = 2)
                 key to value
             }

@@ -163,4 +163,8 @@ abstract class AbstractTraceForestRecorder(startActive: Boolean = false) : Trace
             TraceTree(spanData.traceId)
         }.store(spanData)
     }
+
+    fun storeIfActive(spanData: SpanData) {
+        if(isActive) store(spanData)
+    }
 }

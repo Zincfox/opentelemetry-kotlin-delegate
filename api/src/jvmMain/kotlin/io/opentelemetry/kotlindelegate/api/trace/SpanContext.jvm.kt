@@ -13,7 +13,7 @@ actual object SpanContextStatic {
         spanIdHex: String,
         traceFlags: TraceFlags,
         traceState: TraceState,
-    ): SpanContext = SpanContext.create(spanIdHex, traceIdHex, traceFlags, traceState)
+    ): SpanContext = SpanContext.create(traceIdHex, spanIdHex, traceFlags, traceState)
 
     actual fun createFromRemoteParent(
         traceIdHex: String,

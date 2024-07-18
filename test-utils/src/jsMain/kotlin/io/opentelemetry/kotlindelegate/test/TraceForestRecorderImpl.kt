@@ -8,16 +8,26 @@ import io.opentelemetry.kotlindelegate.api.trace.asCommonStatusCode
 import io.opentelemetry.kotlindelegate.js.toNanos
 import kotlin.js.Promise
 
-class TraceForestRecorderImpl(startActive: Boolean = false) :
+class TraceForestRecorderImpl(startActive: Boolean) :
         AbstractTraceForestRecorder(startActive), SpanExporter {
 
+    constructor() : this(false)
+
     override fun export(spans: Array<ReadableSpan>, resultCallback: (result: ExportResult) -> Unit) {
+        if(!isActive) {
+            resultCallback(object: ExportResult {
+                override val error: Throwable? = null
+                override val code: ExportResultCode
+                    get() = ExportResultCode.SUCCESS
+            })
+            return
+        }
         try {
             spans.forEach { span ->
                 val startTime: Long = span.startTime.toNanos()
                 val duration: Long = span.duration.toNanos()
                 val endTime = startTime + duration
-                store(
+                storeIfActive(
                     SpanData(
                         name = span.name,
                         kind = span.kind.asCommonSpanKind(),
