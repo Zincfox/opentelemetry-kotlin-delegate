@@ -15,7 +15,7 @@ class TraceForestRecorderImpl(startActive: Boolean) :
                 name = span.name,
                 kind = span.kind,
                 spanContext = span.spanContext,
-                parentSpanId = span.parentSpanContext.let { if(it.isValid) it.spanId else "" },
+                parentSpanId = span.parentSpanContext.let { if(it.isValid) it.spanId else null },
                 status = SpanData.StatusData(span.status.statusCode, span.status.description),
                 startEpochNanos = span.startEpochNanos,
                 endEpochNanos = span.endEpochNanos,

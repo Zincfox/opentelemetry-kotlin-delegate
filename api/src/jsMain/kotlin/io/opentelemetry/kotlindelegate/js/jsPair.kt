@@ -9,9 +9,9 @@ var <A> JsPair<A, *>.first: A
     }
 
 var <B> JsPair<*, B>.second: B
-    get() = (this.unsafeCast<Array<B>>()[0])
+    get() = (this.unsafeCast<Array<B>>()[1])
     set(value) {
-        this.unsafeCast<Array<B>>()[0] = value
+        this.unsafeCast<Array<B>>()[1] = value
     }
 
 fun <A, B> jsPairOf(first: A, second: B): JsPair<A, B> = arrayOf<dynamic>(first, second).unsafeCast<JsPair<A, B>>()

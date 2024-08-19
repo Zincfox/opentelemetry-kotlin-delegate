@@ -28,6 +28,7 @@ open class TraceForestPrinter(val recorder: TraceForestRecorder) {
     }
 
     protected open fun writeDebugSpan(span: SpanData, indent: Int, indentString: String): List<String> = buildList {
+        @Suppress("UNUSED_VALUE")
         val spanString = buildString {
             if (span.name.isNotEmpty()) {
                 this@buildString.append(span.name)

@@ -19,20 +19,10 @@ private constructor(val map: Map<AttributeKey<*>, Any>, internal val jsAttribute
 
     companion object {
 
-        private val arrayTypes = setOf(
-            AttributeType.LONG_ARRAY,
-            AttributeType.DOUBLE_ARRAY,
-            AttributeType.STRING_ARRAY,
-            AttributeType.BOOLEAN_ARRAY,
-        )
-
         internal fun toJSAttributes(map: Map<AttributeKey<*>, Any>): JSAttributes {
             val attributes: JSAttributes = js("{}").unsafeCast<JSAttributes>()
             for ((key, value) in map) {
-                if (key.getType() in arrayTypes)
-                    attributes[key.getKey()] = (value as List<*>).toTypedArray()
-                else
-                    attributes[key.getKey()] = value
+                attributes[key.getKey()] = key.getType().forceJsType(value)
             }
             return attributes
         }
@@ -40,7 +30,7 @@ private constructor(val map: Map<AttributeKey<*>, Any>, internal val jsAttribute
 
     internal constructor(map: Map<AttributeKey<*>, Any> = emptyMap()) : this(map, toJSAttributes(map))
     internal constructor(attributes: JSAttributes) : this(attributes.toMap().mapNotNull { (key, value) ->
-        when (value) {
+        val commonKey = when (value) {
             null -> return@mapNotNull null
             is String -> AttributeKeyStatic.stringKey(key)
 
@@ -74,7 +64,8 @@ private constructor(val map: Map<AttributeKey<*>, Any>, internal val jsAttribute
                 }
             }
             else -> return@mapNotNull null
-        } to value
+        }
+        commonKey to commonKey.getType().forceCommonType(value)
     }.toMap(), attributes)
 
     override fun <T : Any> get(key: AttributeKey<T>): T? = map[key]?.unsafeCast<T>()
@@ -88,6 +79,14 @@ private constructor(val map: Map<AttributeKey<*>, Any>, internal val jsAttribute
 
     override fun size(): Int = map.size
     override fun toBuilder(): AttributesBuilder = AttributesBuilderImpl(map)
+
+    override fun equals(other: Any?): Boolean {
+        return other === this || (other is Attributes && asMap() == other.asMap())
+    }
+
+    override fun hashCode(): Int {
+        return map.hashCode()
+    }
 }
 
 fun Attributes.asJsAttributes(): JSAttributes = when (this) {

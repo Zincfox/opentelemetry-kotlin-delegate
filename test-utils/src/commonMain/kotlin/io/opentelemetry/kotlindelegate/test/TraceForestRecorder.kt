@@ -74,6 +74,10 @@ inline fun <T> TraceForestRecorder?.recordAssert(
     return result
 }
 
+inline fun TraceForestRecorder.assert(assertionBlock: TraceForestAsserter.() -> Unit) {
+    TraceForestAsserter.DefaultTraceForestAsserter(this).assertionBlock()
+}
+
 operator fun TraceForestRecorder.get(traceId: String): List<SpanData> = getTraceRootSpans(traceId)
 operator fun TraceForestRecorder.get(spanContext: SpanContext): List<SpanData> = getSpanChildren(spanContext)
 operator fun TraceForestRecorder.get(span: SpanData): List<SpanData> = getSpanChildren(span)

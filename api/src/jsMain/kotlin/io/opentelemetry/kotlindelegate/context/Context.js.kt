@@ -1,9 +1,14 @@
+@file:OptIn(ExperimentalContracts::class)
+
 package io.opentelemetry.kotlindelegate.context
 
 import io.opentelemetry.kotlindelegate.js.ROOT_CONTEXT
 import io.opentelemetry.kotlindelegate.utils.coroutines.JsContextContinuationInterceptor
 import io.opentelemetry.kotlindelegate.utils.java.*
 import kotlinx.coroutines.withContext
+import kotlin.contracts.ExperimentalContracts
+import kotlin.contracts.InvocationKind
+import kotlin.contracts.contract
 import io.opentelemetry.kotlindelegate.js.Context as JsContext
 import io.opentelemetry.kotlindelegate.js.ContextKey as JsContextKey
 import io.opentelemetry.kotlindelegate.js.context as JsContextAPI
@@ -124,21 +129,25 @@ fun Context.asJsContext(): JsContext = when (this) {
 }
 
 fun <R> Context.runWithActiveImpl(block: () -> R): R {
+    contract { callsInPlace(block, InvocationKind.EXACTLY_ONCE) }
     return JsContextAPI.with(this.asJsContext(), {
         block()
     })
 }
 
 suspend fun <R> Context.runWithActiveSuspendImpl(block: suspend () -> R): R {
+    contract { callsInPlace(block, InvocationKind.EXACTLY_ONCE) }
     return withContext(JsContextContinuationInterceptor(asJsContext())) {
         block()
     }
 }
 
 actual inline fun <R> Context.runWithActive(crossinline block: () -> R): R {
+    contract { callsInPlace(block, InvocationKind.EXACTLY_ONCE) }
     return runWithActiveImpl { block() }
 }
 
 actual suspend inline fun <R> Context.runWithActiveSuspend(crossinline block: suspend () -> R): R {
+    contract { callsInPlace(block, InvocationKind.EXACTLY_ONCE) }
     return runWithActiveSuspendImpl { block() }
 }

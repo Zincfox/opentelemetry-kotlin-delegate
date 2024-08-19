@@ -17,5 +17,9 @@ interface TraceAsserter : SpanDataContainerAsserter<SpanDataAsserter<*>> {
         override val directChildren: Sequence<SpanDataAsserter<*>>
             get() = recorder.getTraceRootSpans(traceId).asSequence()
                 .map { SpanDataAsserter.DefaultSpanDataAsserter(recorder, it) }
+
+        override fun toString(): String {
+            return "DefaultTraceAsserter(traceId=$traceId)"
+        }
     }
 }

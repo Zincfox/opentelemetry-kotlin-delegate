@@ -32,7 +32,7 @@ class TraceForestRecorderImpl(startActive: Boolean) :
                         name = span.name,
                         kind = span.kind.asCommonSpanKind(),
                         spanContext = span.spanContext().asCommonSpanContext(),
-                        parentSpanId = span.parentSpanId,
+                        parentSpanId = span.parentSpanId.takeUnless { it.isNullOrEmpty() },
                         status = SpanData.StatusData(
                             statusCode = span.status.code.asCommonStatusCode(),
                             description = span.status.message.orEmpty()

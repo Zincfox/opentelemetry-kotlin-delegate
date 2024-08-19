@@ -70,6 +70,7 @@ actual interface Span : ImplicitContextKeyed {
 }
 
 interface TimedSpan : Span {
+
     fun addEventMillis(name: String, timestampMillis: Long): TimedSpan
     fun addEventNanos(name: String, timestampNanos: Long): TimedSpan
     fun addEventMillis(name: String, attributes: Attributes, timestampMillis: Long): TimedSpan
@@ -82,15 +83,18 @@ actual fun Span.addEventMillis(
     name: String,
     timestampMillis: Long,
 ): Span = (this as TimedSpan).addEventMillis(name, timestampMillis)
+
 actual fun Span.addEventNanos(
     name: String,
     timestampNanos: Long,
 ): Span = (this as TimedSpan).addEventNanos(name, timestampNanos)
+
 actual fun Span.addEventMillis(
     name: String,
     attributes: Attributes,
     timestampMillis: Long,
-): Span  = (this as TimedSpan).addEventMillis(name, attributes, timestampMillis)
+): Span = (this as TimedSpan).addEventMillis(name, attributes, timestampMillis)
+
 actual fun Span.addEventNanos(
     name: String,
     attributes: Attributes,
@@ -100,7 +104,7 @@ actual fun Span.addEventNanos(
 actual fun Span.endMillis(timestampMillis: Long): Unit = (this as TimedSpan).endMillis(timestampMillis)
 actual fun Span.endNanos(timestampNanos: Long): Unit = (this as TimedSpan).endNanos(timestampNanos)
 
-internal class SpanWrapper(val span: JsSpan): TimedSpan {
+internal class SpanWrapper(val span: JsSpan) : TimedSpan {
 
     override fun addEventMillis(name: String, timestampMillis: Long): TimedSpan {
         span.addEvent(name, millisToHrTime(timestampMillis))
@@ -131,7 +135,7 @@ internal class SpanWrapper(val span: JsSpan): TimedSpan {
     }
 
     override fun <T> setAttribute(key: AttributeKey<T>, value: T): Span {
-        span.setAttribute(key.getKey(), value.unsafeCast<Any>())
+        span.setAttribute(key.getKey(), key.getType().forceJsType(value!!))
         return this
     }
 
@@ -143,7 +147,7 @@ internal class SpanWrapper(val span: JsSpan): TimedSpan {
     override fun setStatus(statusCode: StatusCode, description: String): Span {
         val status = js("{}").unsafeCast<SpanStatus>().also {
             it.code = statusCode.jsStatusCode
-            if(description.isNotEmpty())
+            if (description.isNotEmpty())
                 it.message = description
         }
         span.setStatus(status)

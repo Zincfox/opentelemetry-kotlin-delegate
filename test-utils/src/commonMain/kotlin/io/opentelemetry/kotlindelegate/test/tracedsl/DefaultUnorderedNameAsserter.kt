@@ -49,6 +49,10 @@ open class DefaultUnorderedNameAsserter<
         }
     }
 
+    override fun toString(): String {
+        return "DefaultUnorderedNameAsserter(source=$sourceAsserter)"
+    }
+
     open class DefaultUnorderedNameSpanAsserter<
             out ChildAsserter : SpanDataAsserter<ChildAsserter>,
             >(
@@ -58,5 +62,9 @@ open class DefaultUnorderedNameAsserter<
 
         override val data: SpanData
             get() = sourceAsserter.data
+
+        override fun toString(): String {
+            return "DefaultUnorderedNameSpanAsserter(source=$sourceAsserter)"
+        }
     }
 }

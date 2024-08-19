@@ -1,6 +1,7 @@
 package io.opentelemetry.kotlindelegate.test.tracedsl
 
 import io.opentelemetry.kotlindelegate.api.common.AttributeKey
+import io.opentelemetry.kotlindelegate.api.common.Attributes
 import io.opentelemetry.kotlindelegate.api.trace.SpanKind
 import io.opentelemetry.kotlindelegate.api.trace.StatusCode
 import io.opentelemetry.kotlindelegate.test.SpanData
@@ -8,6 +9,7 @@ import io.opentelemetry.kotlindelegate.test.TraceForestRecorder
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.test.fail
 
 interface SpanDataAsserter<out ChildAsserter : SpanDataAsserter<ChildAsserter>> : SpanDataContainerAsserter<ChildAsserter> {
 
@@ -18,7 +20,7 @@ interface SpanDataAsserter<out ChildAsserter : SpanDataAsserter<ChildAsserter>> 
     val startEpochNanos: Long
         get() = data.startEpochNanos
     val endEpochNanos: Long
-        get() = data.startEpochNanos
+        get() = data.endEpochNanos
 
     val durationNanos: Long
         get() = data.endEpochNanos - data.startEpochNanos
@@ -72,20 +74,38 @@ interface SpanDataAsserter<out ChildAsserter : SpanDataAsserter<ChildAsserter>> 
         assertEquals(expected, data.hasEnded, "HasEnded does not match expected value $expected at $path")
     }
 
-    fun <T:Any> assertAttributeEquals(
+    fun <T : Any> assertAttributesEquals(
         key: AttributeKey<T>,
         value: T,
         allowMissing: Boolean = false,
     ) {
         val actual = data.attributes[key]
-        if(!allowMissing){
+        if (!allowMissing) {
             assertNotNull(actual, "Attribute $key is missing at $path")
         }
         actual ?: return
-        assertEquals(value, actual,  "Attribute $key does not match $value at $path")
+        assertEquals(value, actual, "Attribute $key does not match $value at $path")
     }
 
-    fun assertAttributePresent(
+    fun assertAttributesEquals(
+        expected: Attributes,
+        allowMissing: Boolean = false,
+        allowAdditional: Boolean = false,
+    ) {
+        expected.forEach { k, v ->
+            @Suppress("UNCHECKED_CAST")
+            assertAttributesEquals(k as AttributeKey<Any>, v, allowMissing)
+        }
+        if (!allowAdditional) {
+            val expectedKeys = expected.asMap().keys.mapTo(mutableSetOf()) { it.getKey() }
+            val additionalEntries = data.attributes.asMap().filterKeys { it.getKey() !in expectedKeys }
+            if(additionalEntries.isNotEmpty()) {
+                fail("Found additional attributes at $path: $additionalEntries")
+            }
+        }
+    }
+
+    fun assertAttributesPresent(
         key: AttributeKey<*>,
     ) {
         @Suppress("UNCHECKED_CAST")
@@ -124,5 +144,9 @@ interface SpanDataAsserter<out ChildAsserter : SpanDataAsserter<ChildAsserter>> 
                 return recorder.getSpanChildren(data).asSequence()
                     .map { DefaultSpanDataAsserter(recorder, it, spanPath, rootSpanTraceId) }
             }
+
+        override fun toString(): String {
+            return "DefaultSpanDataAsserter(path='$path', data=$data)"
+        }
     }
 }

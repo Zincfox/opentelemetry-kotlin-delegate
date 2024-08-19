@@ -30,7 +30,7 @@ open class DefaultOrderedNameAsserter<
             (this@DefaultOrderedNameAsserter.currentChildSpanIndex++) {
                 assertName(this@invoke)
                 val asserter = DefaultOrderedNameSpanAsserter(this, effectiveOpen).also(block)
-                if(!effectiveOpen){
+                if (!effectiveOpen) {
                     asserter.assertNoMoreChildren()
                 }
             }
@@ -46,11 +46,15 @@ open class DefaultOrderedNameAsserter<
             (this@DefaultOrderedNameAsserter.currentChildSpanIndex++) {
                 val match = assertName(this@invoke)
                 val asserter = DefaultOrderedNameSpanAsserter(this, effectiveOpen).also { block(it, match) }
-                if(!effectiveOpen) {
+                if (!effectiveOpen) {
                     asserter.assertNoMoreChildren()
                 }
             }
         }
+    }
+
+    override fun toString(): String {
+        return "DefaultOrderedNameAsserter(open=$open, source=$sourceAsserter)"
     }
 
     open class DefaultOrderedNameSpanAsserter<
@@ -63,5 +67,9 @@ open class DefaultOrderedNameAsserter<
 
         override val data: SpanData
             get() = sourceAsserter.data
+
+        override fun toString(): String {
+            return "DefaultOrderedNameSpanAsserter(open=$open, source=$sourceAsserter)"
+        }
     }
 }

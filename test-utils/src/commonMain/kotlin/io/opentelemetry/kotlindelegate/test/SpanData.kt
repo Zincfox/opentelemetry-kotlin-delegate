@@ -20,12 +20,14 @@ data class SpanData(
     val events: List<EventData> = emptyList(),
     val links: List<LinkData> = emptyList(),
 ) : Comparable<SpanData> {
+
     val traceId: String
         get() = spanContext.getTraceId()
     val spanId: String
         get() = spanContext.getSpanId()
     val statusCode: StatusCode
         get() = status.statusCode
+
     override fun compareTo(other: SpanData): Int {
         return startEpochNanos.compareTo(other.startEpochNanos)
     }
@@ -33,16 +35,39 @@ data class SpanData(
     data class LinkData(
         val spanContext: SpanContext,
         val attributes: Attributes,
-    )
+    ) {
+
+        override fun toString(): String {
+            return "LinkData(spanContext=${spanContext.getTraceId()}/${spanContext.getSpanId()}/${
+                spanContext.getTraceFlags()
+                    .asHex()
+            }, attributes=${
+                attributes.asMap().entries.joinToString(
+                    prefix = "{",
+                    postfix = "}"
+                ) { "${it.key.getType().name} ${it.key.getKey()}=${it.value}" }
+            })"
+        }
+    }
 
     data class EventData(
         val name: String,
         val attributes: Attributes,
         val epochNanos: Long,
-    )
+    ) {
+
+        override fun toString(): String {
+            return "EventData(epochNanos=$epochNanos, name=\"$name\", attributes=${
+                attributes.asMap().entries.joinToString(
+                    prefix = "{",
+                    postfix = "}"
+                ) { "${it.key.getType().name} ${it.key.getKey()}=${it.value}" }
+            })"
+        }
+    }
 
     data class StatusData(
         val statusCode: StatusCode,
-        val description: String="",
+        val description: String = "",
     )
 }
