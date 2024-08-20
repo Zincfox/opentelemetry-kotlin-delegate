@@ -9,6 +9,7 @@ import kotlinx.coroutines.withContext
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
+import kotlin.coroutines.CoroutineContext
 import io.opentelemetry.kotlindelegate.js.Context as JsContext
 import io.opentelemetry.kotlindelegate.js.ContextKey as JsContextKey
 import io.opentelemetry.kotlindelegate.js.context as JsContextAPI
@@ -141,6 +142,10 @@ suspend fun <R> Context.runWithActiveSuspendImpl(block: suspend () -> R): R {
         block()
     }
 }
+
+actual fun CoroutineContext.getOpenTelemetryContext(): Context =
+    (get(JsContextContinuationInterceptor.Key) as? JsContextContinuationInterceptor)?.context?.asCommonContext()
+        ?: RootContextCommonAdapter
 
 actual inline fun <R> Context.runWithActive(crossinline block: () -> R): R {
     contract { callsInPlace(block, InvocationKind.EXACTLY_ONCE) }

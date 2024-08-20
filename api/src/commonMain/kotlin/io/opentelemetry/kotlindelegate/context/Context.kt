@@ -2,6 +2,7 @@ package io.opentelemetry.kotlindelegate.context
 
 import io.opentelemetry.kotlindelegate.utils.java.*
 import io.opentelemetry.kotlindelegate.utils.java.Function
+import kotlin.coroutines.CoroutineContext
 
 expect interface Context {
 
@@ -21,6 +22,8 @@ expect object ContextStatic {
     fun current(): Context
     fun root(): Context
 }
+
+expect fun CoroutineContext.getOpenTelemetryContext(): Context
 
 expect inline fun <R> Context.runWithActive(crossinline block: ()->R): R
 expect suspend inline fun <R> Context.runWithActiveSuspend(crossinline block: suspend ()->R): R
