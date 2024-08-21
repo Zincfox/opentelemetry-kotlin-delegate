@@ -82,7 +82,7 @@ kotlin {
                     api(platform("io.opentelemetry:opentelemetry-bom:1.36.0"))
                     api("io.opentelemetry:opentelemetry-api:1.36.0")
                     api("io.opentelemetry:opentelemetry-context:1.36.0")
-                    implementation("io.opentelemetry:opentelemetry-extension-kotlin:1.36.0")
+                    api("io.opentelemetry:opentelemetry-extension-kotlin:1.36.0")
                 }
             }
             val jvmTest by getting
