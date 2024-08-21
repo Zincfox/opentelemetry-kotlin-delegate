@@ -10,7 +10,7 @@ import kotlin.contracts.contract
 
 actual typealias ImplicitContextKeyed = io.opentelemetry.context.ImplicitContextKeyed
 
-actual inline fun <R> ImplicitContextKeyed.runWithActive(block: () -> R): R {
+actual inline fun <R> ImplicitContextKeyed.runWithActive(crossinline block: () -> R): R {
     contract { callsInPlace(block, InvocationKind.EXACTLY_ONCE) }
     return makeCurrent().use { block() }
 }

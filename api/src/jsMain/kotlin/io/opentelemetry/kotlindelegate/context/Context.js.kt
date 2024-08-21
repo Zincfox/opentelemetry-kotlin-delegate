@@ -79,7 +79,11 @@ actual interface Context {
 actual object ContextStatic {
 
     actual fun current(): Context {
-        return ContextCommonAdapter(JsContextAPI.active())
+        val activeContext = JsContextAPI.active()
+        return if(activeContext === ROOT_CONTEXT)
+            RootContextCommonAdapter
+        else
+            ContextCommonAdapter(activeContext)
     }
 
     actual fun root(): Context {
@@ -113,6 +117,16 @@ private open class ContextCommonAdapter(val context: JsContext) : Context {
 
     override fun <V> with(k1: ContextKey<V>, v1: V): Context {
         return context.setValue(k1.jsContextKey, v1).asCommonContext()
+    }
+
+    override fun hashCode(): Int {
+        return context.hashCode()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is ContextCommonAdapter) return false
+        return context == other.context
     }
 }
 
