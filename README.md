@@ -8,6 +8,11 @@ The benefit of this approach over [dcxp/opentelemetry-kotlin](https://github.com
 
 On java no wrapper objects are allocated, nearly everything is done with the actual OpenTelemetry library classes by utilizing `actual typealias`.
 
+## Where did `Context.makeCurrent()` go?
+
+`Context.makeCurrent` and `Scope.close` do not exist in the JavaScript opentelemetry api, as such they cannot be included in the multiplatform wrapper.
+Instead, use `Context.runWithActive` to run code with the given context.
+
 ## TODO
 
 - Documentation
