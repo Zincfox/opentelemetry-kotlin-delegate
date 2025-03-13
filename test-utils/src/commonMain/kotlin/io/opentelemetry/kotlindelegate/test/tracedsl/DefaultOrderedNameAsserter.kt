@@ -27,7 +27,7 @@ open class DefaultOrderedNameAsserter<
     ) {
         val effectiveOpen = open ?: this@DefaultOrderedNameAsserter.open
         with(sourceAsserter) {
-            (this@DefaultOrderedNameAsserter.currentChildSpanIndex++) {
+            (this@DefaultOrderedNameAsserter.currentChildSpanIndex++) innerInvoke@{
                 assertName(this@invoke)
                 val asserter = DefaultOrderedNameSpanAsserter(this, effectiveOpen).also(block)
                 if (!effectiveOpen) {
@@ -43,7 +43,7 @@ open class DefaultOrderedNameAsserter<
     ) {
         val effectiveOpen = open ?: this@DefaultOrderedNameAsserter.open
         with(sourceAsserter) {
-            (this@DefaultOrderedNameAsserter.currentChildSpanIndex++) {
+            (this@DefaultOrderedNameAsserter.currentChildSpanIndex++) innerInvoke@{
                 val match = assertName(this@invoke)
                 val asserter = DefaultOrderedNameSpanAsserter(this, effectiveOpen).also { block(it, match) }
                 if (!effectiveOpen) {

@@ -1,14 +1,18 @@
 .gradle/
 build/
+.idea/
+.dockerignore
+.gitignore
+.git
+api/build/
+api-events/build/
+test-utils/build/
 !gradle/wrapper/gradle-wrapper.jar
 
-### IntelliJ IDEA ###
 .idea
 
-### Kotlin ###
 .kotlin
 
-### Eclipse ###
 .apt_generated
 .classpath
 .factorypath
@@ -20,15 +24,12 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-### NetBeans ###
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
 .vscode/
 
-### Mac OS ###
 .DS_Store

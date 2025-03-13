@@ -82,12 +82,8 @@ internal class TextMapPropagatorJsAdapter<C : Any>(val propagator: TextMapPropag
         carrier: C,
         setter: JsTextMapSetter<C>?,
     ) {
-        val effectiveSetter: TextMapSetter<C> =
-            if (setter == null || setter == undefined) {
-                TextMapRecordSetter.forType()
-            } else {
-                setter.asCommonTextMapSetter()
-            }
+        val effectiveSetter: TextMapSetter<C> = setter?.asCommonTextMapSetter()
+            ?: TextMapRecordSetter.forType()
         propagator.inject(context.asCommonContext(), carrier, effectiveSetter)
     }
 
@@ -96,12 +92,8 @@ internal class TextMapPropagatorJsAdapter<C : Any>(val propagator: TextMapPropag
         carrier: C,
         getter: JsTextMapGetter<C>?,
     ): JsContext {
-        val effectiveGetter: TextMapGetter<C> =
-            if (getter == null || getter == undefined) {
-                TextMapRecordGetter.forType()
-            } else {
-                getter.asCommonTextMapGetter()
-            }
+        val effectiveGetter: TextMapGetter<C> = getter?.asCommonTextMapGetter()
+            ?: TextMapRecordGetter.forType()
         return propagator.extract(context.asCommonContext(), carrier, effectiveGetter).asJsContext()
     }
 }

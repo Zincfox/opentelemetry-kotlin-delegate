@@ -143,6 +143,7 @@ fun Context.asJsContext(): JsContext = when (this) {
     else -> ContextJsAdapter(this)
 }
 
+@Suppress("LEAKED_IN_PLACE_LAMBDA", "WRONG_INVOCATION_KIND")
 fun <R> Context.runWithActiveImpl(block: () -> R): R {
     contract { callsInPlace(block, InvocationKind.EXACTLY_ONCE) }
     return JsContextAPI.with(this.asJsContext(), {

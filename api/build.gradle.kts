@@ -20,6 +20,7 @@ if (enableJs) {
 
 kotlin {
     if (enableJvm) {
+        jvmToolchain(17)
         jvm {
             compilations.all {
                 kotlinOptions {
@@ -27,7 +28,6 @@ kotlin {
                     jvmTarget = "17"
                 }
             }
-            jvmToolchain(17)
             withJava()
             testRuns.named("test") {
                 executionTask.configure {

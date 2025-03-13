@@ -55,7 +55,6 @@ private class TextMapGetterCommonAdapter<C : Any>(val getter: JsTextMapGetter<C>
             when (it) {
                 is String -> it
                 is Array<*> -> it.first()?.toString()
-                undefined -> null
                 null -> null
                 else -> it.toString()
             }
@@ -71,7 +70,7 @@ internal object TextMapRecordGetter : TextMapGetter<Any> {
     }
 
     override fun get(carrier: Any?, key: String): String? {
-        if (carrier == null || carrier == undefined) return null
+        if (carrier == null) return null
         return (carrier.unsafeCast<JsRecord<String, String>>())[key]
     }
 }
