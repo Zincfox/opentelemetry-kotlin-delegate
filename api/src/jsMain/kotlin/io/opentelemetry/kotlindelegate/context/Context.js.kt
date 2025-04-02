@@ -3,7 +3,8 @@
 package io.opentelemetry.kotlindelegate.context
 
 import io.opentelemetry.kotlindelegate.js.ROOT_CONTEXT
-import io.opentelemetry.kotlindelegate.utils.coroutines.JsContextContinuationInterceptor
+import io.opentelemetry.kotlindelegate.utils.coroutines.CommonContextContinuationInterceptor
+import io.opentelemetry.kotlindelegate.utils.coroutines.asContextElement
 import io.opentelemetry.kotlindelegate.utils.java.*
 import kotlinx.coroutines.withContext
 import kotlin.contracts.ExperimentalContracts
@@ -153,13 +154,13 @@ fun <R> Context.runWithActiveImpl(block: () -> R): R {
 
 suspend fun <R> Context.runWithActiveSuspendImpl(block: suspend () -> R): R {
     contract { callsInPlace(block, InvocationKind.EXACTLY_ONCE) }
-    return withContext(JsContextContinuationInterceptor(asJsContext())) {
+    return withContext(asContextElement()) {
         block()
     }
 }
 
 actual fun CoroutineContext.getOpenTelemetryContext(): Context =
-    (get(JsContextContinuationInterceptor.Key) as? JsContextContinuationInterceptor)?.context?.asCommonContext()
+    (get(CommonContextContinuationInterceptor.Key) as? CommonContextContinuationInterceptor)?.context
         ?: RootContextCommonAdapter
 
 actual inline fun <R> Context.runWithActive(crossinline block: () -> R): R {

@@ -1,6 +1,7 @@
 package io.opentelemetry.kotlindelegate.context
 
 import io.opentelemetry.extension.kotlin.asContextElement
+import io.opentelemetry.kotlindelegate.utils.coroutines.CommonContextContinuationInterceptor
 import io.opentelemetry.extension.kotlin.getOpenTelemetryContext as getOpenTelemetryContextJvm
 import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
@@ -14,12 +15,20 @@ actual object ContextStatic {
     actual fun root(): Context = Context.root()
 }
 
-actual fun CoroutineContext.getOpenTelemetryContext(): Context = getOpenTelemetryContextJvm()
+actual fun CoroutineContext.getOpenTelemetryContext(): Context {
+    return (
+            get(CommonContextContinuationInterceptor.Key)
+                    as? CommonContextContinuationInterceptor
+                ?: return ContextStatic.root()
+            ).context
+}
 
 actual inline fun <R> Context.runWithActive(crossinline block: () -> R): R {
     return makeCurrent().use { block() }
 }
 
 actual suspend inline fun <R> Context.runWithActiveSuspend(crossinline block: suspend () -> R): R {
-    return withContext(this.asContextElement()) {block()}
+    return withContext(this.asContextElement()) {
+        block()
+    }
 }

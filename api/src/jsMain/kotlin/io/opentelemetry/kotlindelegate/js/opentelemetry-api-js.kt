@@ -39,11 +39,6 @@ external class ContextAPI protected constructor() {
         arg2: B,
         arg3: C,
     ): R
-
-    companion object {
-
-        fun getInstance(): ContextAPI
-    }
 }
 
 external class DiagAPI protected constructor() : DiagLogger {
