@@ -181,6 +181,44 @@ internal class SpanWrapper(val span: JsSpan) : TimedSpan {
     override fun isRecording(): Boolean {
         return span.isRecording()
     }
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other == null || this::class.js != other::class.js) return false
+
+        other as SpanWrapper
+
+        if(span == other.span) return true
+
+        val ownContext = span.spanContext()
+        val otherContext = other.span.spanContext()
+
+        if(ownContext == otherContext) return true
+        if(ownContext.traceId != otherContext.traceId) return false
+        if(ownContext.spanId != otherContext.spanId) return false
+        if(ownContext.isRemote != otherContext.isRemote) return false
+        if(ownContext.traceFlags != otherContext.traceFlags) return false
+        if(ownContext.traceState?.serialize() != otherContext.traceState?.serialize()) return false
+        return true
+    }
+
+    override fun hashCode(): Int {
+        val context = span.spanContext()
+        var result = 17
+        result = 31 * result + context.traceId.hashCode()
+        result = 31 * result + context.spanId.hashCode()
+        result = 31 * result + context.isRemote.let { when(it) {
+            null -> 0
+            false -> 1
+            true -> 2
+        } }
+        result = 31 * result + context.traceFlags
+        result = 31 * result + (context.traceState?.serialize()?.hashCode() ?: 0)
+        return result
+    }
+
+    override fun toString(): String {
+        return "SpanWrapper(span=$span,ctx=${span.spanContext()})"
+    }
 }
 
 fun JsSpan.asCommonSpan(): TimedSpan = SpanWrapper(this)
