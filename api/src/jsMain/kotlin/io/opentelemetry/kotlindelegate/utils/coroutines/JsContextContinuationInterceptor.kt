@@ -4,11 +4,6 @@ import kotlin.coroutines.*
 import io.opentelemetry.kotlindelegate.js.Context as JsContext
 import io.opentelemetry.kotlindelegate.js.context as JsContextAPI
 
-//No generic because it cannot be specified with ::function syntax
-private fun continuationRunner(continuation: Continuation<*>, result: Result<*>) {
-    (continuation.unsafeCast<Continuation<Any?>>()).resumeWith(result.unsafeCast<Result<Any?>>())
-}
-
 class JsContextContinuationInterceptor(val context: JsContext) : ContinuationInterceptor {
 
     companion object {
@@ -25,9 +20,7 @@ class JsContextContinuationInterceptor(val context: JsContext) : ContinuationInt
 
     override fun <T> interceptContinuation(continuation: Continuation<T>): Continuation<T> {
         return Continuation(continuation.context) { result ->
-            JsContextAPI.with(context, { c, r ->
-                continuationRunner(c, r)
-            }, undefined, continuation, result)
+            JsContextAPI.with(context, Continuation<T>::resumeWith, undefined, continuation, result)
         }
     }
 }
